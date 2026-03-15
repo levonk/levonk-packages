@@ -5,7 +5,7 @@ clean:
     devbox shell clean
 
 test:
-    devbox shell test
+    just test-internal
 
 build:
     devbox shell build
