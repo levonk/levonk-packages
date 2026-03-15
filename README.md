@@ -1,6 +1,22 @@
 # Command Preference & Package Governance System
 
-A unified, cross-ecosystem system for command preference and package governance that works seamlessly with your existing development workflow.
+**AI Agent Harness for Preferred Tooling Governance**
+
+This repository provides a unified system for AI agents to stay within preferred tooling boundaries while maintaining developer productivity. It serves as a **harness for automated systems** to enforce tooling policies without breaking existing workflows.
+
+## 🎯 Purpose
+
+### Primary: AI Agent Governance
+- **Enforce tooling preferences** for AI agents and automated systems
+- **Prevent tool drift** in automated code generation and management
+- **Provide clear guidance** when agents attempt to use disfavored tools
+- **Maintain consistency** across AI-assisted development workflows
+
+### Secondary: Developer Tool Governance
+- **Gradual migration** support for teams adopting new tooling standards
+- **Multi-project environments** where different projects use different tools
+- **Policy enforcement** for organizations with specific tooling requirements
+- **Educational guidance** for developers learning new tooling ecosystems
 
 ## 🚀 Quick Start
 
@@ -57,14 +73,24 @@ nix run .#prefer-pnpm -- --version
 - **Environment setup**: `prefer-devbox`
 - **Package manager management**: `prefer-corepack`
 
-### Bundle Packages (5 packages)
-- **`command-governance`** - All 47 governance packages in one
-- **`prefer-all`** - All prefer packages for gentle guidance
-- **`force-pnpm`** - All pnpm force packages for complete migration
-- **`force-uv`** - uv force package for Python ecosystem
-- **`force-devbox`** - devbox force package for environment setup
+### Logical Bundle Packages (5 packages)
+- **`nodejs-ecosystem`** - All Node.js package manager governance (npm/pnpm/yarn/bun)
+- **`python-ecosystem`** - Python package manager governance (pip/uv)
+- **`dev-tools`** - Development tool governance (curl/devbox)
+- **`migrate-to-pnpm-bundle`** - Complete npm→pnpm migration bundle
+- **`migrate-to-uv-bundle`** - Complete pip→uv migration bundle
 
-**Total: 49 individual governance packages + 5 bundle packages = 54 packages**
+### Individual Force Packages
+- **`force-uv`** - Individual package that forces pip→uv (as defined in specs)
+- **`force-pnpm`** - Individual package that forces npm→pnpm
+- **`force-devbox`** - Individual package that forces curl→devbox
+
+### Legacy Bundle Package
+- **`command-governance`** - All 47 governance packages in one bundle
+
+**Note**: `force-uv` is an individual package (per specs), while `migrate-to-uv-bundle` is a convenience bundle that includes `force-uv` + `eject-pip` + `prefer-uv` for complete migration scenarios.
+
+**Total: 49 individual governance packages + 6 bundle packages = 55 packages**
 
 📖 **See [docs/PACKAGE_LIST.md](docs/PACKAGE_LIST.md) for the complete detailed list.**
 
@@ -82,21 +108,22 @@ npm install
 # 💡 Tip: Multiple alternatives detected. Consider standardizing on pnpm for best compatibility.
 ```
 
-### 📦 Smart Bundle Packages
-New bundle packages for specific migration scenarios:
+### 📦 Logical Bundle Packages
+New logical bundles organized by tool categories:
 
 ```bash
-# Gentle guidance across all tools
-devbox add github:levonk/levonk-packages#prefer-all
+# Node.js ecosystem governance
+devbox add github:levonk/levonk-packages#nodejs-ecosystem
 
-# Complete npm → pnpm migration
-devbox add github:levonk/levonk-packages#force-pnpm
+# Python ecosystem governance  
+devbox add github:levonk/levonk-packages#python-ecosystem
 
-# Python pip → uv migration
-devbox add github:levonk/levonk-packages#force-uv
+# Development tool guidance
+devbox add github:levonk/levonk-packages#dev-tools
 
-# Environment setup guidance
-devbox add github:levonk/levonk-packages#force-devbox
+# Complete migration scenarios
+devbox add github:levonk/levonk-packages#migrate-to-pnpm
+devbox add github:levonk/levonk-packages#migrate-to-uv
 ```
 
 ## 🎯 Use Cases
@@ -161,8 +188,11 @@ nix run .#prefer-pnpm -- --version
 nix run .#block-npm -- --version  # Exits with error
 
 # Test bundle packages
-nix build .#prefer-all
-nix build .#force-pnpm
+nix build .#nodejs-ecosystem
+nix build .#python-ecosystem
+nix build .#dev-tools
+nix build .#migrate-to-pnpm
+nix build .#migrate-to-uv
 ```
 
 ## 🔧 Installation

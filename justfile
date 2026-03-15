@@ -88,14 +88,16 @@ test-internal:
     nix run .#prefer-corepack -- --version || echo "✅ prefer-corepack wrapper working (expected failure)"
     echo "Testing bundle package..."
     nix build .#command-governance
-    echo "Testing prefer-all bundle..."
-    nix build .#prefer-all
-    echo "Testing force-pnpm bundle..."
-    nix build .#force-pnpm
-    echo "Testing force-uv bundle..."
-    nix build .#force-uv
-    echo "Testing force-devbox bundle..."
-    nix build .#force-devbox
+    echo "Testing nodejs-ecosystem bundle..."
+    nix build .#nodejs-ecosystem
+    echo "Testing python-ecosystem bundle..."
+    nix build .#python-ecosystem
+    echo "Testing dev-tools bundle..."
+    nix build .#dev-tools
+    echo "Testing migrate-to-pnpm bundle..."
+    nix build .#migrate-to-pnpm
+    echo "Testing migrate-to-uv bundle..."
+    nix build .#migrate-to-uv
     echo "✅ Package functionality tests complete"
 
 test-comprehensive:
@@ -108,6 +110,56 @@ install-internal:
     echo "  devbox add .#prefer-pnpm"
     echo "  devbox add .#command-governance"
     echo "  devbox add github:levonk/levonk-packages#prefer-pnpm"
+
+# Release management
+release:
+    echo "🚀 Creating GitHub release..."
+    just release-internal
+
+release-internal:
+    # Test release workflow locally
+    echo "🧪 Testing release workflow locally..."
+    act --dry-run release || echo "ACT not available, skipping local test"
+    
+    # Generate all packaging
+    echo "📦 Generating packaging for all ecosystems..."
+    just generate-all
+    
+    # Create release artifacts
+    echo "📋 Creating release artifacts..."
+    mkdir -p dist
+    
+    # Add package list to release
+    cp docs/PACKAGE_LIST.md dist/
+    cp README.md dist/
+    cp docs/SPEC.md dist/
+    
+    # Generate checksums
+    echo "🔐 Generating checksums..."
+    cd dist
+    sha256sum * > SHA256SUMS
+    cd ..
+    
+    echo "✅ Release artifacts ready in dist/"
+    echo "📋 Files created:"
+    ls -la dist/
+    
+    echo ""
+    echo "🎯 Release workflow:"
+    echo "1. Review artifacts in dist/"
+    echo "2. Create GitHub release with dist/ files"
+    echo "3. Upload packages to package registries"
+
+# Generate all packaging
+generate-all:
+    echo "🏭 Generating packaging for all ecosystems..."
+    ./packaging/alpine/generate-apk.sh
+    ./packaging/debian/generate-deb.sh
+    ./packaging/fedora/generate-rpm.sh
+    ./packaging/arch/generate-pkgbuild.sh
+    ./packaging/brew/generate-formula.rb
+    ./packaging/mise/generate-mise-plugins.sh
+    echo "✅ All packaging generated"
 
 # Generate packaging for different ecosystems  
 generate-internal:

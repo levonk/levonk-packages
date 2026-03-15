@@ -215,28 +215,33 @@ Example output from `prefer-pnpm`:
 
 ## Bundle Packages
 
-### Standard Bundles
+### Logical Bundle Packages
+
+- **`nodejs-ecosystem`** - All Node.js package manager governance (npm/pnpm/yarn/bun)
+- **`python-ecosystem`** - Python package manager governance (pip/uv)
+- **`dev-tools`** - Development tool governance (curl/devbox)
+- **`migrate-to-pnpm`** - Complete npm→pnpm migration bundle
+- **`migrate-to-uv`** - Complete pip→uv migration bundle
+
+### Legacy Bundle Package
 
 - **`command-governance`** - All 47 governance packages in one bundle
-- **`prefer-all`** - All prefer packages for gentle guidance
-- **`force-pnpm`** - All pnpm force packages for complete migration
-- **`force-uv`** - uv force package for Python ecosystem
-- **`force-devbox`** - devbox force package for environment setup
 
 ### Usage Examples
 
 ```bash
-# Gentle guidance across all tools
-devbox add github:levonk/levonk-packages#prefer-all
+# Node.js ecosystem governance
+devbox add github:levonk/levonk-packages#nodejs-ecosystem
 
-# Complete npm → pnpm migration
-devbox add github:levonk/levonk-packages#force-pnpm
+# Python ecosystem governance
+devbox add github:levonk/levonk-packages#python-ecosystem
 
-# Python pip → uv migration
-devbox add github:levonk/levonk-packages#force-uv
+# Development tool guidance
+devbox add github:levonk/levonk-packages#dev-tools
 
-# Environment setup guidance
-devbox add github:levonk/levonk-packages#force-devbox
+# Complete migration scenarios
+devbox add github:levonk/levonk-packages#migrate-to-pnpm
+devbox add github:levonk/levonk-packages#migrate-to-uv
 ```
 
 ## Testing
@@ -266,8 +271,8 @@ just test-internal
 ### Test Coverage
 
 - **13 individual governance packages** tested
-- **4 bundle packages** tested
-- **17 test scenarios** total
+- **6 bundle packages** tested
+- **19 test scenarios** total
 - **Transient devbox environments** for isolation
 - **Behavioral validation** for all four governance types
 

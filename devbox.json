@@ -7,7 +7,8 @@
     "nix",
     "nodejs",
     "pnpm",
-    "uv"
+    "uv",
+    "act"
   ],
   "shell": {
     "init_hook": [
@@ -24,6 +25,8 @@
     "test": "just test-internal", 
     "install": "just install-internal",
     "generate": "just generate-internal",
-    "clean": "just clean-internal"
+    "clean": "just clean-internal",
+    "release": "just release-internal",
+    "release-test": "just release-test-internal"
   }
 }

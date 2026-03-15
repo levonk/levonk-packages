@@ -130,10 +130,11 @@
           # Other packages
           inherit prefer-devbox;
           inherit prefer-corepack;
-          inherit prefer-all;
-          inherit force-pnpm;
-          inherit force-uv;
-          inherit force-devbox;
+          nodejs-ecosystem = import ./nix/nodejs-ecosystem.nix { inherit pkgs; };
+          python-ecosystem = import ./nix/python-ecosystem.nix { inherit pkgs; };
+          dev-tools = import ./nix/dev-tools.nix { inherit pkgs; };
+          migrate-to-pnpm-bundle = import ./nix/migrate-to-pnpm-bundle.nix { inherit pkgs; };
+          migrate-to-uv-bundle = import ./nix/migrate-to-uv-bundle.nix { inherit pkgs; };
           inherit command-governance;
           
           # Default package

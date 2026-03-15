@@ -36,10 +36,11 @@ echo "        eject-bun = import ./nix/eject-bun.nix { inherit pkgs; };" >> flak
 echo "        force-bun = import ./nix/force-bun.nix { inherit pkgs; };" >> flake.nix
 echo "        block-bun = import ./nix/block-bun.nix { inherit pkgs; };" >> flake.nix
 
-# pnpm governance packages
+# pip governance packages
 echo "        prefer-uv = import ./nix/prefer-uv.nix { inherit pkgs; };" >> flake.nix
-echo "        eject-pip = import ./nix/eject-pip.nix { inherit pkgs; };" >> flake.nix
 echo "        block-pip = import ./nix/block-pip.nix { inherit pkgs; };" >> flake.nix
+echo "        eject-pip = import ./nix/eject-pip.nix { inherit pkgs; };" >> flake.nix
+echo "        force-uv = import ./nix/force-uv.nix { inherit pkgs; };" >> flake.nix
 echo "        prefer-npm = import ./nix/prefer-npm.nix { inherit pkgs; };" >> flake.nix
 echo "        force-npm = import ./nix/force-npm.nix { inherit pkgs; };" >> flake.nix
 echo "        eject-pnpm = import ./nix/eject-pnpm.nix { inherit pkgs; };" >> flake.nix
@@ -159,9 +160,15 @@ echo "          inherit eject-yarn-from-bun;" >> flake.nix
 echo "          # Other packages" >> flake.nix
 echo "          inherit prefer-devbox;" >> flake.nix
 echo "          inherit prefer-corepack;" >> flake.nix
-echo "          inherit prefer-all;" >> flake.nix
-echo "          inherit force-pnpm;" >> flake.nix
 echo "          inherit force-uv;" >> flake.nix
+
+# Logical bundle packages
+echo "          nodejs-ecosystem = import ./nix/nodejs-ecosystem.nix { inherit pkgs; };" >> flake.nix
+echo "          python-ecosystem = import ./nix/python-ecosystem.nix { inherit pkgs; };" >> flake.nix
+echo "          dev-tools = import ./nix/dev-tools.nix { inherit pkgs; };" >> flake.nix
+echo "          migrate-to-pnpm-bundle = import ./nix/migrate-to-pnpm-bundle.nix { inherit pkgs; };" >> flake.nix
+echo "          migrate-to-uv-bundle = import ./nix/migrate-to-uv-bundle.nix { inherit pkgs; };" >> flake.nix
+
 echo "          inherit force-devbox;" >> flake.nix
 echo "          inherit command-governance;" >> flake.nix
 
