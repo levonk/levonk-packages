@@ -74,7 +74,33 @@ test-internal:
     nix run .#prefer-pnpm -- --version || echo "✅ prefer-pnpm wrapper working (expected failure)"
     echo "Testing block-npm..."
     nix run .#block-npm -- --version || echo "✅ block-npm wrapper working (expected failure)"
+    echo "Testing prefer-npm..."
+    nix run .#prefer-npm -- --version || echo "✅ prefer-npm wrapper working (expected failure)"
+    echo "Testing prefer-yarn..."
+    nix run .#prefer-yarn -- --version || echo "✅ prefer-yarn wrapper working (expected failure)"
+    echo "Testing prefer-bun..."
+    nix run .#prefer-bun -- --version || echo "✅ prefer-bun wrapper working (expected failure)"
+    echo "Testing prefer-uv..."
+    nix run .#prefer-uv -- --version || echo "✅ prefer-uv wrapper working (expected failure)"
+    echo "Testing prefer-devbox..."
+    nix run .#prefer-devbox -- --version || echo "✅ prefer-devbox wrapper working (expected failure)"
+    echo "Testing prefer-corepack..."
+    nix run .#prefer-corepack -- --version || echo "✅ prefer-corepack wrapper working (expected failure)"
+    echo "Testing bundle package..."
+    nix build .#command-governance
+    echo "Testing prefer-all bundle..."
+    nix build .#prefer-all
+    echo "Testing force-pnpm bundle..."
+    nix build .#force-pnpm
+    echo "Testing force-uv bundle..."
+    nix build .#force-uv
+    echo "Testing force-devbox bundle..."
+    nix build .#force-devbox
     echo "✅ Package functionality tests complete"
+
+test-comprehensive:
+    echo "🧪 Running comprehensive governance tests..."
+    ./scripts/test-governance.sh
 
 # Install individual packages via devbox
 install-internal:

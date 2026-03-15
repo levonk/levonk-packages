@@ -130,6 +130,10 @@
           # Other packages
           inherit prefer-devbox;
           inherit prefer-corepack;
+          inherit prefer-all;
+          inherit force-pnpm;
+          inherit force-uv;
+          inherit force-devbox;
           inherit command-governance;
           
           # Default package

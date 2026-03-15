@@ -159,6 +159,10 @@ echo "          inherit eject-yarn-from-bun;" >> flake.nix
 echo "          # Other packages" >> flake.nix
 echo "          inherit prefer-devbox;" >> flake.nix
 echo "          inherit prefer-corepack;" >> flake.nix
+echo "          inherit prefer-all;" >> flake.nix
+echo "          inherit force-pnpm;" >> flake.nix
+echo "          inherit force-uv;" >> flake.nix
+echo "          inherit force-devbox;" >> flake.nix
 echo "          inherit command-governance;" >> flake.nix
 
 cat >> flake.nix << 'EOF'

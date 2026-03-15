@@ -86,7 +86,7 @@ This ensures:
 - Clean layering
 - Predictable behavior across all ecosystems
 
-## Repository Layout
+## Repository Structure
 
 ```
 .
@@ -96,21 +96,83 @@ This ensures:
 │   ├── npm.force-pnpm.sh
 │   ├── npm.block-npm.sh
 │   ├── npm.eject-npm.sh
+│   ├── npm.prefer-yarn.sh
+│   ├── npm.prefer-bun.sh
+│   ├── pnpm.prefer-npm.sh
+│   ├── pnpm.prefer-yarn.sh
+│   ├── pnpm.prefer-bun.sh
+│   ├── pnpm.block-pnpm.sh
+│   ├── pnpm.eject-pnpm.sh
+│   ├── yarn.prefer-npm.sh
+│   ├── yarn.prefer-pnpm.sh
+│   ├── yarn.prefer-bun.sh
+│   ├── yarn.block-yarn.sh
+│   ├── yarn.eject-yarn.sh
+│   ├── bun.prefer-npm.sh
+│   ├── bun.prefer-pnpm.sh
+│   ├── bun.prefer-yarn.sh
+│   ├── bun.block-bun.sh
+│   ├── bun.eject-bun.sh
 │   ├── pip.prefer-uv.sh
 │   ├── pip.block-pip.sh
 │   ├── pip.eject-pip.sh
 │   ├── curl.prefer-devbox.sh
-│   └── node.prefer-corepack.sh
+│   ├── node.prefer-corepack.sh
+│   └── utils/detect-packages.sh
 ├── nix/
 │   ├── prefer-pnpm.nix
 │   ├── force-pnpm.nix
 │   ├── block-npm.nix
 │   ├── eject-npm.nix
+│   ├── prefer-yarn.nix
+│   ├── prefer-bun.nix
+│   ├── prefer-npm.nix
+│   ├── force-npm.nix
+│   ├── eject-pnpm.nix
+│   ├── block-pnpm.nix
+│   ├── prefer-yarn-from-pnpm.nix
+│   ├── prefer-bun-from-pnpm.nix
+│   ├── force-yarn-from-pnpm.nix
+│   ├── force-bun-from-pnpm.nix
+│   ├── block-yarn-from-pnpm.nix
+│   ├── block-bun-from-pnpm.nix
+│   ├── eject-yarn-from-pnpm.nix
+│   ├── eject-bun-from-pnpm.nix
+│   ├── prefer-npm-from-yarn.nix
+│   ├── prefer-pnpm-from-yarn.nix
+│   ├── prefer-bun-from-yarn.nix
+│   ├── force-npm-from-yarn.nix
+│   ├── force-pnpm-from-yarn.nix
+│   ├── force-bun-from-yarn.nix
+│   ├── block-npm-from-yarn.nix
+│   ├── block-pnpm-from-yarn.nix
+│   ├── block-bun-from-yarn.nix
+│   ├── eject-npm-from-yarn.nix
+│   ├── eject-pnpm-from-yarn.nix
+│   ├── eject-bun-from-yarn.nix
+│   ├── prefer-npm-from-bun.nix
+│   ├── prefer-pnpm-from-bun.nix
+│   ├── prefer-yarn-from-bun.nix
+│   ├── force-npm-from-bun.nix
+│   ├── force-pnpm-from-bun.nix
+│   ├── force-yarn-from-bun.nix
+│   ├── block-npm-from-bun.nix
+│   ├── block-pnpm-from-bun.nix
+│   ├── block-yarn-from-bun.nix
+│   ├── eject-npm-from-bun.nix
+│   ├── eject-pnpm-from-bun.nix
+│   ├── eject-yarn-from-bun.nix
 │   ├── prefer-uv.nix
 │   ├── block-pip.nix
 │   ├── eject-pip.nix
+│   ├── force-uv.nix
 │   ├── prefer-devbox.nix
 │   ├── prefer-corepack.nix
+│   ├── force-devbox.nix
+│   ├── prefer-all.nix
+│   ├── force-pnpm.nix
+│   ├── force-uv-bundle.nix
+│   ├── force-devbox-bundle.nix
 │   └── bundle-command-governance.nix
 ├── packaging/
 │   ├── alpine/generate-apk.sh
@@ -119,12 +181,95 @@ This ensures:
 │   ├── arch/generate-pkgbuild.sh
 │   ├── brew/generate-formula.rb
 │   └── mise/generate-mise-plugins.sh
+├── scripts/
+│   ├── identify-missing-tools.sh
+│   ├── update-wrappers-dynamic.sh
+│   ├── update-bundles.sh
+│   ├── test-governance.sh
+│   └── generate-flake.sh
 ├── devbox.json
 ├── justfile
 └── docs/
     ├── SPEC.md
-    └── ADR-devbox-ux.md
+    ├── ADR-devbox-ux.md
+    └── PACKAGE_LIST.md
 ```
+
+## Dynamic Package Detection
+
+All `prefer-*` wrappers now include dynamic package detection that:
+
+1. **Scans for available alternatives** - Checks which preferred tools are installed
+2. **Lists available options** - Shows users what alternatives are available on their system
+3. **Provides contextual guidance** - Suggests the best available alternative
+4. **Offers helpful tips** - Recommends standardization when multiple tools are detected
+
+Example output from `prefer-pnpm`:
+```
+⚠️ Prefer pnpm over npm. Detecting available alternatives...
+✅ Using pnpm (preferred)
+ℹ️  yarn is also available
+ℹ️  bun is also available
+💡 Tip: Multiple alternatives detected. Consider standardizing on pnpm for best compatibility.
+```
+
+## Bundle Packages
+
+### Standard Bundles
+
+- **`command-governance`** - All 47 governance packages in one bundle
+- **`prefer-all`** - All prefer packages for gentle guidance
+- **`force-pnpm`** - All pnpm force packages for complete migration
+- **`force-uv`** - uv force package for Python ecosystem
+- **`force-devbox`** - devbox force package for environment setup
+
+### Usage Examples
+
+```bash
+# Gentle guidance across all tools
+devbox add github:levonk/levonk-packages#prefer-all
+
+# Complete npm → pnpm migration
+devbox add github:levonk/levonk-packages#force-pnpm
+
+# Python pip → uv migration
+devbox add github:levonk/levonk-packages#force-uv
+
+# Environment setup guidance
+devbox add github:levonk/levonk-packages#force-devbox
+```
+
+## Testing
+
+### Comprehensive Test Suite
+
+The system includes a comprehensive test suite that validates:
+
+1. **Individual package behavior** - All 47 governance packages
+2. **Bundle package functionality** - All 5 bundle packages
+3. **Cross-ecosystem compatibility** - Nix, Devbox, and packaging generators
+4. **Dynamic detection** - Package discovery and suggestion features
+
+### Test Commands
+
+```bash
+# Quick functionality tests
+just test
+
+# Comprehensive test suite with transient devbox environments
+just test-comprehensive
+
+# Individual package testing
+just test-internal
+```
+
+### Test Coverage
+
+- **13 individual governance packages** tested
+- **4 bundle packages** tested
+- **17 test scenarios** total
+- **Transient devbox environments** for isolation
+- **Behavioral validation** for all four governance types
 
 ## Installation
 

@@ -57,12 +57,47 @@ nix run .#prefer-pnpm -- --version
 - **Environment setup**: `prefer-devbox`
 - **Package manager management**: `prefer-corepack`
 
-### Bundle Package
+### Bundle Packages (5 packages)
 - **`command-governance`** - All 47 governance packages in one
+- **`prefer-all`** - All prefer packages for gentle guidance
+- **`force-pnpm`** - All pnpm force packages for complete migration
+- **`force-uv`** - uv force package for Python ecosystem
+- **`force-devbox`** - devbox force package for environment setup
 
-**Total: 48 individual governance packages + 1 bundle = 49 packages**
+**Total: 49 individual governance packages + 5 bundle packages = 54 packages**
 
 📖 **See [docs/PACKAGE_LIST.md](docs/PACKAGE_LIST.md) for the complete detailed list.**
+
+## 🔧 New Features
+
+### 🎯 Dynamic Package Detection
+All `prefer-*` wrappers now intelligently detect available alternatives on your system:
+
+```bash
+npm install
+# ⚠️ Prefer pnpm over npm. Detecting available alternatives...
+# ✅ Using pnpm (preferred)
+# ℹ️  yarn is also available
+# ℹ️  bun is also available
+# 💡 Tip: Multiple alternatives detected. Consider standardizing on pnpm for best compatibility.
+```
+
+### 📦 Smart Bundle Packages
+New bundle packages for specific migration scenarios:
+
+```bash
+# Gentle guidance across all tools
+devbox add github:levonk/levonk-packages#prefer-all
+
+# Complete npm → pnpm migration
+devbox add github:levonk/levonk-packages#force-pnpm
+
+# Python pip → uv migration
+devbox add github:levonk/levonk-packages#force-uv
+
+# Environment setup guidance
+devbox add github:levonk/levonk-packages#force-devbox
+```
 
 ## 🎯 Use Cases
 
@@ -94,6 +129,40 @@ devbox add github:levonk/levonk-packages#block-npm
 # npm commands are blocked
 npm install
 # ❌ npm is blocked by policy. Use pnpm or corepack instead.
+```
+
+## 🧪 Testing
+
+### Quick Tests
+```bash
+# Run basic functionality tests
+just test
+
+# Run comprehensive test suite
+just test-comprehensive
+
+# Test individual packages
+just test-internal
+```
+
+### Test Coverage
+- **13 individual governance packages** tested
+- **4 bundle packages** tested
+- **17 test scenarios** total
+- **Transient devbox environments** for isolation
+- **Behavioral validation** for all four governance types
+
+### Test Examples
+```bash
+# Test prefer-pnpm behavior
+nix run .#prefer-pnpm -- --version
+
+# Test block-npm behavior
+nix run .#block-npm -- --version  # Exits with error
+
+# Test bundle packages
+nix build .#prefer-all
+nix build .#force-pnpm
 ```
 
 ## 🔧 Installation

@@ -1,3 +1,31 @@
 #!/usr/bin/env sh
-echo "⚠️ Prefer pnpm over yarn. Running pnpm instead..."
-exec pnpm "$@"
+# Source the package detection utility
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/utils/detect-packages.sh" ]; then
+    . "$SCRIPT_DIR/utils/detect-packages.sh"
+fi
+
+# Detect available alternatives
+echo "⚠️ Prefer pnpm npm bun over yarn. Detecting available alternatives..."
+
+# List available alternatives
+available_found=false
+for tool in pnpm npm bun; do
+    if command -v "$tool" >/dev/null 2>&1; then
+        if [ "$tool" = "pnpm" ]; then
+            echo "✅ Using $tool (preferred)"
+            exec "$tool" "$@"
+        else
+            echo "ℹ️  $tool is also available"
+            available_found=true
+        fi
+    fi
+done
+
+if [ "$available_found" = true ]; then
+    echo "💡 Tip: Multiple alternatives detected. Consider standardizing on pnpm for best compatibility."
+fi
+
+# Fallback to preferred tool
+echo "🔄 Running pnpm..."
+exec "pnpm" "$@"
