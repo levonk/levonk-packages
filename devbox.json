@@ -1,0 +1,29 @@
+{
+  "name": "command-governance",
+  "version": "1.0.0",
+  "description": "Command Preference & Package Governance System",
+  "packages": [
+    "just",
+    "nix",
+    "nodejs",
+    "pnpm",
+    "uv"
+  ],
+  "shell": {
+    "init_hook": [
+      "echo '🔧 Command Governance Development Environment'",
+      "echo 'Available commands:'",
+      "echo '  just build    - Build all packages'",
+      "echo '  just test     - Test package functionality'",
+      "echo '  just install  - Install individual packages via devbox'",
+      "echo '  just generate - Generate packaging for different ecosystems'"
+    ]
+  },
+  "scripts": {
+    "build": "just build-internal",
+    "test": "just test-internal", 
+    "install": "just install-internal",
+    "generate": "just generate-internal",
+    "clean": "just clean-internal"
+  }
+}
