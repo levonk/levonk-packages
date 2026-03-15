@@ -1,3 +1,9 @@
+#!/bin/bash
+set -euo pipefail
+
+# Update bundle-command-governance.nix with all packages
+
+cat > nix/bundle-command-governance.nix << 'EOF'
 { pkgs }:
 
 let
@@ -126,3 +132,6 @@ pkgs.symlinkJoin {
     prefer-corepack
   ];
 }
+EOF
+
+echo "Updated bundle-command-governance.nix with all packages!"

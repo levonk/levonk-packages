@@ -30,23 +30,39 @@ nix run .#prefer-pnpm -- --version
 
 ## 📦 Available Packages
 
-### npm Governance
-- **`prefer-pnpm`** - Warn and delegate to pnpm
-- **`eject-npm`** - Remove npm and block future installs
-- **`force-pnpm`** - Replace npm with pnpm transparently
-- **`block-npm`** - Block npm execution entirely
+### npm Governance (12 packages)
+- **npm → pnpm**: `prefer-pnpm`, `eject-npm`, `force-pnpm`, `block-npm`
+- **npm → yarn**: `prefer-yarn`, `eject-yarn`, `force-yarn`, `block-yarn`
+- **npm → bun**: `prefer-bun`, `eject-bun`, `force-bun`, `block-bun`
 
-### pip Governance
-- **`prefer-uv`** - Warn and delegate to uv
-- **`eject-pip`** - Remove pip and block future installs
-- **`block-pip`** - Block pip execution entirely
+### pnpm Governance (15 packages)
+- **pnpm → npm**: `prefer-npm`, `eject-pnpm`, `force-npm`, `block-pnpm`
+- **pnpm → yarn**: `prefer-yarn-from-pnpm`, `eject-yarn-from-pnpm`, `force-yarn-from-pnpm`, `block-yarn-from-pnpm`
+- **pnpm → bun**: `prefer-bun-from-pnpm`, `eject-bun-from-pnpm`, `force-bun-from-pnpm`, `block-bun-from-pnpm`
 
-### Tool Preferences
-- **`prefer-devbox`** - Guide away from curl for environment setup
-- **`prefer-corepack`** - Guide toward corepack for package manager management
+### yarn Governance (12 packages)
+- **yarn → npm**: `prefer-npm-from-yarn`, `eject-npm-from-yarn`, `force-npm-from-yarn`, `block-npm-from-yarn`
+- **yarn → pnpm**: `prefer-pnpm-from-yarn`, `eject-pnpm-from-yarn`, `force-pnpm-from-yarn`, `block-pnpm-from-yarn`
+- **yarn → bun**: `prefer-bun-from-yarn`, `eject-bun-from-yarn`, `force-bun-from-yarn`, `block-bun-from-yarn`
+
+### bun Governance (12 packages)
+- **bun → npm**: `prefer-npm-from-bun`, `eject-npm-from-bun`, `force-npm-from-bun`, `block-npm-from-bun`
+- **bun → pnpm**: `prefer-pnpm-from-bun`, `eject-pnpm-from-bun`, `force-pnpm-from-bun`, `block-pnpm-from-bun`
+- **bun → yarn**: `prefer-yarn-from-bun`, `eject-yarn-from-bun`, `force-yarn-from-bun`, `block-yarn-from-bun`
+
+### pip Governance (3 packages)
+- **pip → uv**: `prefer-uv`, `eject-pip`, `block-pip`
+
+### Tool Preferences (2 packages)
+- **Environment setup**: `prefer-devbox`
+- **Package manager management**: `prefer-corepack`
 
 ### Bundle Package
-- **`command-governance`** - All governance packages in one
+- **`command-governance`** - All 47 governance packages in one
+
+**Total: 48 individual governance packages + 1 bundle = 49 packages**
+
+📖 **See [docs/PACKAGE_LIST.md](docs/PACKAGE_LIST.md) for the complete detailed list.**
 
 ## 🎯 Use Cases
 
