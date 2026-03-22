@@ -20,6 +20,8 @@ This repository provides a unified system for AI agents to stay within preferred
 
 ## 🚀 Quick Start
 
+**Note**: Nix/Devbox packages work immediately. Other package managers require running `just generate` first.
+
 ### With Devbox (Recommended)
 
 ```bash
@@ -36,12 +38,25 @@ npm install  # Now governed by pnpm
 ### With Nix
 
 ```bash
-# Build locally
+# Build locally from source
 nix build .#prefer-pnpm
 nix build .#command-governance
 
 # Run governed commands
 nix run .#prefer-pnpm -- --version
+```
+
+### Other Package Managers
+
+```bash
+# First generate packages
+git clone https://github.com/levonk/levonk-packages.git
+cd levonk-packages
+just generate
+
+# Then install via your preferred package manager
+# Example for Alpine:
+apk add command-prefer-pnpm
 ```
 
 ## 📦 Available Packages
@@ -199,16 +214,28 @@ nix build .#migrate-to-uv
 
 ### Package Managers
 
+**Note**: Packages must be generated first with `just generate` from this repository.
+
 | Manager | Command |
 |---------|---------|
 | **Devbox** | `devbox add github:levonk/levonk-packages#prefer-pnpm` |
 | **Nix** | `nix build .#prefer-pnpm` |
-| **Alpine** | `apk add command-prefer-pnpm` |
-| **Debian/Ubuntu** | `sudo apt install command-prefer-pnpm` |
-| **Fedora** | `sudo dnf install command-prefer-pnpm` |
-| **Arch** | `yay -S command-prefer-pnpm` |
-| **Homebrew** | `brew install command-prefer-pnpm` |
-| **mise** | `mise use prefer-pnpm` |
+| **Alpine** | `apk add command-prefer-pnpm` *(after generation)* |
+| **Debian/Ubuntu** | `sudo apt install command-prefer-pnpm` *(after generation)* |
+| **Fedora** | `sudo dnf install command-prefer-pnpm` *(after generation)* |
+| **Arch** | `yay -S command-prefer-pnpm` *(after generation)* |
+| **Homebrew** | `brew install command-prefer-pnpm` *(after generation)* |
+| **mise** | `mise use prefer-pnpm` *(after generation)* |
+
+### Generate All Packages
+
+```bash
+# Generate packages for all ecosystems
+just generate
+
+# Or generate specific ecosystems
+just generate-internal
+```
 
 ### Development Setup
 
@@ -223,11 +250,11 @@ just bootstrap
 # Build all packages
 just build
 
-# Test functionality
-just test
-
 # Generate packaging for all ecosystems
 just generate
+
+# Test functionality
+just test
 ```
 
 ## 🏗️ Architecture
@@ -250,14 +277,16 @@ eject-*      (base layer)
 
 ### Cross-Ecosystem Support
 
-The same micro-packages work across:
-- Nix (flakes, Devbox, home-manager, NixOS)
-- Alpine Linux (APK)
-- Debian/Ubuntu (APT/DEB)
-- Fedora (RPM)
-- Arch Linux (PKGBUILD)
-- Homebrew (Formula)
-- mise (plugin shims)
+This repository generates packages that work across multiple ecosystems:
+- Nix (flakes, Devbox, home-manager, NixOS) - Available immediately
+- Alpine Linux (APK) - Generated via `just generate`
+- Debian/Ubuntu (APT/DEB) - Generated via `just generate`
+- Fedora (RPM) - Generated via `just generate`
+- Arch Linux (PKGBUILD) - Generated via `just generate`
+- Homebrew (Formula) - Generated via `just generate`
+- mise (plugin shims) - Generated via `just generate`
+
+**Note**: Run `just generate` to create packages for all ecosystems from the source wrappers.
 
 ## 🔄 Integration with Existing Workflows
 
