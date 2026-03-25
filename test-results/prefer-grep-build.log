@@ -1,0 +1,2 @@
+warning: Git tree '/Users/micro/p/gh/levonk/levonk-packages' is dirty
+evaluation warning: Nixpkgs 26.05 will be the last release to support x86_64-darwin; see https://nixos.org/manual/nixpkgs/unstable/release-notes#x86_64-darwin-26.05

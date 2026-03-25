@@ -2,5 +2,5 @@
 
 pkgs.writeShellScriptBin "ucg" ''
   #!/usr/bin/env sh
-  ${builtins.readFile ../wrappers/ucg.prefer-ripgrep.sh}
+  ${builtins.readFile ../wrappers/search-tools/ucg.prefer-ripgrep.sh}
 ''

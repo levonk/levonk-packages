@@ -1,10 +1,6 @@
 { pkgs }:
 
-let
-  npm = pkgs.nodePackages.npm;
-in
-pkgs.writeShellScriptBin "pnpm" ''
+pkgs.writeShellScriptBin "npm" ''
   #!/usr/bin/env sh
-  echo "⚠️ Prefer npm over pnpm. Running npm instead..."
-  exec ${npm}/bin/npm "$@"
+  ${builtins.readFile ../wrappers/nodejs-tools/npm.prefer-pnpm.sh}
 ''

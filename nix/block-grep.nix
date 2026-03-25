@@ -2,5 +2,5 @@
 
 pkgs.writeShellScriptBin "grep" ''
   #!/usr/bin/env sh
-  ${builtins.readFile ../wrappers/grep.block-grep.sh}
+  ${builtins.readFile ../wrappers/search-tools/grep.block-grep.sh}
 ''

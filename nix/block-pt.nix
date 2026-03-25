@@ -2,5 +2,5 @@
 
 pkgs.writeShellScriptBin "pt" ''
   #!/usr/bin/env sh
-  ${builtins.readFile ../wrappers/pt.block-pt.sh}
+  ${builtins.readFile ../wrappers/search-tools/pt.block-pt.sh}
 ''

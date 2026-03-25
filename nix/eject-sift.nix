@@ -2,5 +2,5 @@
 
 pkgs.writeShellScriptBin "sift" ''
   #!/usr/bin/env sh
-  ${builtins.readFile ../wrappers/sift.eject-sift.sh}
+  ${builtins.readFile ../wrappers/search-tools/sift.eject-sift.sh}
 ''

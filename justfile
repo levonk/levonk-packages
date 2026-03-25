@@ -69,36 +69,31 @@ build-internal:
 
 # Test package functionality
 test-internal:
-    echo "🧪 Testing package functionality..."
-    echo "Testing prefer-pnpm..."
-    nix run .#prefer-pnpm -- --version || echo "✅ prefer-pnpm wrapper working (expected failure)"
-    echo "Testing block-npm..."
-    nix run .#block-npm -- --version || echo "✅ block-npm wrapper working (expected failure)"
-    echo "Testing prefer-npm..."
-    nix run .#prefer-npm -- --version || echo "✅ prefer-npm wrapper working (expected failure)"
-    echo "Testing prefer-yarn..."
-    nix run .#prefer-yarn -- --version || echo "✅ prefer-yarn wrapper working (expected failure)"
-    echo "Testing prefer-bun..."
-    nix run .#prefer-bun -- --version || echo "✅ prefer-bun wrapper working (expected failure)"
-    echo "Testing prefer-uv..."
-    nix run .#prefer-uv -- --version || echo "✅ prefer-uv wrapper working (expected failure)"
-    echo "Testing prefer-devbox..."
-    nix run .#prefer-devbox -- --version || echo "✅ prefer-devbox wrapper working (expected failure)"
-    echo "Testing prefer-corepack..."
-    nix run .#prefer-corepack -- --version || echo "✅ prefer-corepack wrapper working (expected failure)"
-    echo "Testing bundle package..."
-    nix build .#command-governance
-    echo "Testing nodejs-ecosystem bundle..."
-    nix build .#nodejs-ecosystem
-    echo "Testing python-ecosystem bundle..."
-    nix build .#python-ecosystem
-    echo "Testing dev-tools bundle..."
-    nix build .#dev-tools
-    echo "Testing migrate-to-pnpm bundle..."
-    nix build .#migrate-to-pnpm
-    echo "Testing migrate-to-uv bundle..."
-    nix build .#migrate-to-uv
-    echo "✅ Package functionality tests complete"
+    echo "🧪 Testing package functionality with unified framework..."
+    ./scripts/test-governance-unified.sh all
+
+# Test ripgrep governance packages specifically
+test-ripgrep:
+    echo "🧪 Testing ripgrep governance packages..."
+    ./scripts/test-governance-unified.sh search
+    echo "✅ Ripgrep package functionality tests complete"
+
+# Test Node.js governance packages specifically
+test-nodejs:
+    echo "🧪 Testing Node.js governance packages..."
+    ./scripts/test-governance-unified.sh nodejs
+    echo "✅ Node.js package functionality tests complete"
+
+# Test specific package
+test-package:
+    #!/usr/bin/env bash
+    if [ -z "{{package}}" ]; then
+        echo "Usage: just test-package <package-name>"
+        echo "Example: just test-package prefer-grep"
+        exit 1
+    fi
+    echo "🧪 Testing specific package: {{package}}"
+    ./scripts/test-governance-unified.sh "{{package}}"
 
 test-comprehensive:
     echo "🧪 Running comprehensive governance tests..."

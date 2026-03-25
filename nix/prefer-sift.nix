@@ -2,5 +2,5 @@
 
 pkgs.writeShellScriptBin "sift" ''
   #!/usr/bin/env sh
-  ${builtins.readFile ../wrappers/sift.prefer-ripgrep.sh}
+  ${builtins.readFile ../wrappers/search-tools/sift.prefer-ripgrep.sh}
 ''

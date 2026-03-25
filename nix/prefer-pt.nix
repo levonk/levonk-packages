@@ -2,5 +2,5 @@
 
 pkgs.writeShellScriptBin "pt" ''
   #!/usr/bin/env sh
-  ${builtins.readFile ../wrappers/pt.prefer-ripgrep.sh}
+  ${builtins.readFile ../wrappers/search-tools/pt.prefer-ripgrep.sh}
 ''

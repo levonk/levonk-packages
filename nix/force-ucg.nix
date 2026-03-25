@@ -2,5 +2,5 @@
 
 pkgs.writeShellScriptBin "ucg" ''
   #!/usr/bin/env sh
-  ${builtins.readFile ../wrappers/ucg.force-ucg.sh}
+  ${builtins.readFile ../wrappers/search-tools/ucg.force-ucg.sh}
 ''

@@ -2,5 +2,5 @@
 
 pkgs.writeShellScriptBin "ag" ''
   #!/usr/bin/env sh
-  ${builtins.readFile ../wrappers/ag.eject-ag.sh}
+  ${builtins.readFile ../wrappers/search-tools/ag.eject-ag.sh}
 ''
