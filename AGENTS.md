@@ -14,11 +14,11 @@
 ├── flake.nix                    # Nix flake definitions for all packages
 ├── justfile                     # Command runner with all build/generate/test commands
 ├── devbox.json                  # Devbox environment configuration
-├── wrappers/                    # Source wrapper scripts (52 files)
+├── wrappers/                    # Source wrapper scripts (115 files)
 │   ├── npm.prefer-pnpm.sh      # Example: npm → pnpm wrapper
 │   ├── pip.prefer-uv.sh        # Example: pip → uv wrapper
 │   └── utils/detect-packages.sh # Dynamic package detection
-├── nix/                         # Nix derivations (63 files)
+├── nix/                         # Nix derivations (115 files)
 │   ├── prefer-pnpm.nix         # Individual package derivations
 │   └── bundle-command-governance.nix # Bundle packages
 ├── packaging/                   # Package generators for all ecosystems
@@ -126,7 +126,7 @@ For new tool ecosystems, use the automated generation system:
 ./scripts/generate-governance-suite.sh curl docs       # Documentation only
 ./scripts/generate-governance-suite.sh curl all        # Everything
 
-# Available tools: npm, pnpm, yarn, bun, pip, grep, ag, git-grep, ucg, pt, sift
+# Available tools: npm, pnpm, yarn, bun, pip, grep, ag, git-grep, ucg, pt, sift, sudo, curl, wget, find, locate, sed
 ```
 
 **What the generator creates:**
@@ -190,6 +190,11 @@ wrappers/
 ├── python-tools/     (3 files)  - pip packages  
 ├── search-tools/     (24 files) - grep, ag, git-grep, ucg, pt, sift packages
 ├── system-tools/     (2 files)  - curl, node packages
+├── privilege-tools/  (8 files)  - sudo, pkexec, doas, sudo-rs packages
+├── download-tools/   (10 files) - curl, wget, httpie, wget2, aria2 packages
+├── find-tools/       (8 files)  - find, fd packages
+├── locate-tools/     (8 files)  - locate, plocate packages
+├── text-tools/       (8 files)  - sed, sd packages
 └── utils/            (shared utilities)
 ```
 
@@ -379,9 +384,9 @@ just test-internal
 
 ### Test Coverage
 
-- **37 individual governance packages tested** (13 existing + 24 ripgrep)
-- **6 bundle packages tested**
-- **43 test scenarios total**
+- **115 individual governance packages tested** (13 existing + 24 search tools + 44 new system tools + 34 extended packages)
+- **11 bundle packages tested**
+- **126 test scenarios total**
 - **Transient devbox environments for isolation**
 
 #### Ripgrep Test Results
@@ -454,13 +459,103 @@ nix run .#prefer-pnpm -- --version
 - **`force-*`** - Forces disfavored tool to use ripgrep (e.g., `force-grep` makes grep command run ripgrep)
 - **`block-*`** - Complete prohibition with error-exiting wrappers
 
-### Bundle Packages (6 packages)
+### Privilege Tool Governance (8 packages)
+
+#### sudo → Modern Privilege Tools
+- **sudo → sudo-rs**: `prefer-sudo`, `eject-sudo`, `force-sudo`, `block-sudo`
+- **sudo → doas**: `prefer-sudo-doas`, `eject-sudo-doas`, `force-sudo-doas`, `block-sudo-doas`
+- **pkexec → sudo**: `prefer-pkexec`, `eject-pkexec`, `force-pkexec`, `block-pkexec`
+
+#### Individual Package Details
+- **`prefer-sudo`** - Soft guidance preferring sudo-rs over traditional sudo
+- **`prefer-sudo-doas`** - Soft guidance preferring doas over sudo for simplicity
+- **`prefer-pkexec`** - Soft guidance preferring sudo over pkexec for consistency
+
+#### Why sudo-rs/doas?
+- **sudo-rs**: Rust implementation with memory safety and reduced attack surface
+- **doas**: Minimalist alternative from OpenBSD, simpler configuration
+- **Better security**: Reduced code complexity and modern security practices
+
+### Download Tool Governance (10 packages)
+
+#### curl → Modern Download Tools
+- **curl → wget**: `prefer-curl`, `eject-curl`, `force-curl`, `block-curl`
+- **curl → httpie**: `prefer-curl-httpie`, `eject-curl-httpie`, `force-curl-httpie`, `block-curl-httpie`
+- **wget → aria2**: `prefer-wget`, `eject-wget`, `force-wget`, `block-wget`
+- **wget2 → curl**: `prefer-wget2`, `eject-wget2`, `force-wget2`, `block-wget2`
+
+#### Individual Package Details
+- **`prefer-curl`** - Soft guidance preferring wget over curl for download scripts
+- **`prefer-curl-httpie`** - Soft guidance preferring httpie for API debugging
+- **`prefer-wget`** - Soft guidance preferring aria2 for parallel downloads
+- **`prefer-wget2`** - Soft guidance preferring curl over wget2 for compatibility
+
+#### Tool Comparison
+- **curl**: Versatile, supports many protocols, script-friendly
+- **wget**: Recursive downloads, robust for mirroring
+- **httpie**: User-friendly JSON/API debugging with syntax highlighting
+- **aria2**: Multi-connection downloads, supports various protocols
+- **wget2**: Modern wget rewrite with improved performance
+
+### Find Tool Governance (8 packages)
+
+#### find → fd
+- **find → fd**: `prefer-find`, `eject-find`, `force-find`, `block-find`
+- **fd → find**: `prefer-fd`, `eject-fd`, `force-fd`, `block-fd`
+
+#### Individual Package Details
+- **`prefer-find`** - Soft guidance preferring fd over traditional find
+- **`prefer-fd`** - Soft guidance preferring find over fd for complex expressions
+
+#### Why fd?
+- **Intuitive defaults**: Ignores hidden files and respects .gitignore
+- **Fast performance**: Rust-based with parallel execution
+- **Developer-friendly**: Colored output and sane defaults
+- **Simple syntax**: Regular expressions instead of complex find expressions
+
+### Locate Tool Governance (8 packages)
+
+#### locate → plocate
+- **locate → plocate**: `prefer-locate`, `eject-locate`, `force-locate`, `block-locate`
+- **plocate → locate**: `prefer-plocate`, `eject-plocate`, `force-plocate`, `block-plocate`
+
+#### Individual Package Details
+- **`prefer-locate`** - Soft guidance preferring plocate over traditional locate
+- **`prefer-plocate`** - Soft guidance preferring locate over plocate for compatibility
+
+#### Why plocate?
+- **Better performance**: Uses posting lists for faster searches
+- **Modern implementation**: Improved indexing and search algorithms
+- **Compatibility**: Drop-in replacement for traditional locate/updatedb
+
+### Text Processing Tool Governance (8 packages)
+
+#### sed → sd
+- **sed → sd**: `prefer-sed`, `eject-sed`, `force-sed`, `block-sed`
+- **sd → sed**: `prefer-sd`, `eject-sd`, `force-sd`, `block-sd`
+
+#### Individual Package Details
+- **`prefer-sed`** - Soft guidance preferring sd over sed for simple replacements
+- **`prefer-sd`** - Soft guidance preferring sed over sd for complex scripts
+
+#### Why sd?
+- **Intuitive syntax**: Uses regular expressions more familiar to developers
+- **Safer by default**: Doesn't modify files in-place unless explicitly requested
+- **Better error handling**: Clear error messages and safer operations
+- **Performance**: Fast Rust implementation for common use cases
+
+### Bundle Packages (11 packages)
 - **`nodejs-ecosystem`** - All Node.js package manager governance
 - **`python-ecosystem`** - Python package manager governance
 - **`dev-tools`** - Development tool governance
 - **`migrate-to-pnpm-bundle`** - Complete npm→pnpm migration
 - **`migrate-to-uv-bundle`** - Complete pip→uv migration
-- **`command-governance`** - All 71 governance packages (47 existing + 24 search tools)
+- **`privilege-tools`** - All privilege escalation tool governance
+- **`download-tools`** - All download tool governance
+- **`find-tools`** - All file finding tool governance
+- **`locate-tools`** - All file locating tool governance
+- **`text-tools`** - All text processing tool governance
+- **`command-governance`** - All 115 governance packages (47 existing + 24 search tools + 44 new system tools)
 
 ## Search Tool Governance: ripgrep
 
