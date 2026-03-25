@@ -66,6 +66,32 @@
         prefer-devbox = import ./nix/prefer-devbox.nix { inherit pkgs; };
         prefer-corepack = import ./nix/prefer-corepack.nix { inherit pkgs; };
         
+        # Search tool governance packages
+        prefer-grep = import ./nix/prefer-grep.nix { inherit pkgs; };
+        eject-grep = import ./nix/eject-grep.nix { inherit pkgs; };
+        force-grep = import ./nix/force-grep.nix { inherit pkgs; };
+        block-grep = import ./nix/block-grep.nix { inherit pkgs; };
+        prefer-ag = import ./nix/prefer-ag.nix { inherit pkgs; };
+        eject-ag = import ./nix/eject-ag.nix { inherit pkgs; };
+        force-ag = import ./nix/force-ag.nix { inherit pkgs; };
+        block-ag = import ./nix/block-ag.nix { inherit pkgs; };
+        prefer-git-grep = import ./nix/prefer-git-grep.nix { inherit pkgs; };
+        eject-git-grep = import ./nix/eject-git-grep.nix { inherit pkgs; };
+        force-git-grep = import ./nix/force-git-grep.nix { inherit pkgs; };
+        block-git-grep = import ./nix/block-git-grep.nix { inherit pkgs; };
+        prefer-ucg = import ./nix/prefer-ucg.nix { inherit pkgs; };
+        eject-ucg = import ./nix/eject-ucg.nix { inherit pkgs; };
+        force-ucg = import ./nix/force-ucg.nix { inherit pkgs; };
+        block-ucg = import ./nix/block-ucg.nix { inherit pkgs; };
+        prefer-pt = import ./nix/prefer-pt.nix { inherit pkgs; };
+        eject-pt = import ./nix/eject-pt.nix { inherit pkgs; };
+        force-pt = import ./nix/force-pt.nix { inherit pkgs; };
+        block-pt = import ./nix/block-pt.nix { inherit pkgs; };
+        prefer-sift = import ./nix/prefer-sift.nix { inherit pkgs; };
+        eject-sift = import ./nix/eject-sift.nix { inherit pkgs; };
+        force-sift = import ./nix/force-sift.nix { inherit pkgs; };
+        block-sift = import ./nix/block-sift.nix { inherit pkgs; };
+        
         # Bundle package
         command-governance = import ./nix/bundle-command-governance.nix { inherit pkgs; };
         
@@ -130,6 +156,31 @@
           # Other packages
           inherit prefer-devbox;
           inherit prefer-corepack;
+          # Search tool governance packages
+          inherit prefer-grep;
+          inherit eject-grep;
+          inherit force-grep;
+          inherit block-grep;
+          inherit prefer-ag;
+          inherit eject-ag;
+          inherit force-ag;
+          inherit block-ag;
+          inherit prefer-git-grep;
+          inherit eject-git-grep;
+          inherit force-git-grep;
+          inherit block-git-grep;
+          inherit prefer-ucg;
+          inherit eject-ucg;
+          inherit force-ucg;
+          inherit block-ucg;
+          inherit prefer-pt;
+          inherit eject-pt;
+          inherit force-pt;
+          inherit block-pt;
+          inherit prefer-sift;
+          inherit eject-sift;
+          inherit force-sift;
+          inherit block-sift;
           nodejs-ecosystem = import ./nix/nodejs-ecosystem.nix { inherit pkgs; };
           python-ecosystem = import ./nix/python-ecosystem.nix { inherit pkgs; };
           dev-tools = import ./nix/dev-tools.nix { inherit pkgs; };
