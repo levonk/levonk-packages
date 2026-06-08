@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  ruby = pkgs.ruby;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "ruby" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${ruby}/bin/ruby"
   ${builtins.readFile ../wrappers/devbox-reminders/eject-devbox.sh}
 ''

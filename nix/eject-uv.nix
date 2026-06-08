@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  uv = pkgs.uv;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "uv" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${uv}/bin/uv"
   ${builtins.readFile ../wrappers/devbox-reminders/eject-devbox.sh}
 ''

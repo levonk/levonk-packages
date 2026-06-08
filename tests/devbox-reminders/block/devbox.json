@@ -1,0 +1,53 @@
+{
+  "packages": [
+    "nixpkgs#bun",
+    "nixpkgs#yarn",
+    "nixpkgs#ripgrep",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-ag",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-bun",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-bun-from-pnpm",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-bun-from-yarn",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-cargo",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-clang",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-cmake",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-dotnet",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-gcc",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-gem",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-git-grep",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-go",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-gpp",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-grep",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-java",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-javac",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-just",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-make",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-ninja",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-node",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-npm",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-npm-from-bun",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-npm-from-yarn",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-pip",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-pip3",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-pnpm",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-pnpm-from-bun",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-pnpm-from-yarn",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-pt",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-python",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-python3",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-ruby",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-rustc",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-sift",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-swift",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-tsc",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-ucg",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-uv",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-yarn",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-yarn-from-bun",
+    "path:/Users/micro/p/gh/levonk/levonk-packages#block-yarn-from-pnpm"
+  ],
+  "shell": {
+    "init_hook": [
+      "chmod +x test.sh && ./test.sh"
+    ]
+  }
+}

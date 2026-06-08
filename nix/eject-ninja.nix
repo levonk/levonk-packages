@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  ninja = pkgs.ninja;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "ninja" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${ninja}/bin/ninja"
   ${builtins.readFile ../wrappers/devbox-reminders/eject-devbox.sh}
 ''

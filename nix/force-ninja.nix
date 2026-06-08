@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  uv = pkgs.uv;
+  ninja = pkgs.ninja;
 in
-pkgs.writeShellScriptBin "uv" ''
+pkgs.writeShellScriptBin "ninja" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${uv}/bin/uv"
+  REAL_TOOL="${ninja}/bin/ninja"
   ${builtins.readFile ../wrappers/devbox-reminders/force-devbox.sh}
 ''

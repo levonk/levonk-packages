@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  gpp = pkgs.gcc;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "g++" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${gpp}/bin/g++"
   ${builtins.readFile ../wrappers/devbox-reminders/block-devbox.sh}
 ''

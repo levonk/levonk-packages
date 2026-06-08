@@ -6,5 +6,5 @@ in
 pkgs.writeShellScriptBin "uv" ''
   #!/usr/bin/env sh
   REAL_TOOL="${uv}/bin/uv"
-  ${builtins.readFile ../wrappers/devbox-reminders/prefer-uv.sh}
+  ${builtins.readFile ../wrappers/devbox-reminders/block-devbox.sh}
 ''

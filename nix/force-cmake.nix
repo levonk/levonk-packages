@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  uv = pkgs.uv;
+  cmake = pkgs.cmake;
 in
-pkgs.writeShellScriptBin "uv" ''
+pkgs.writeShellScriptBin "cmake" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${uv}/bin/uv"
+  REAL_TOOL="${cmake}/bin/cmake"
   ${builtins.readFile ../wrappers/devbox-reminders/force-devbox.sh}
 ''

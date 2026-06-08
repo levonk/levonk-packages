@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  tsc = pkgs.typescript;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "tsc" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${tsc}/bin/tsc"
   ${builtins.readFile ../wrappers/devbox-reminders/block-devbox.sh}
 ''

@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  uv = pkgs.uv;
+  gem = pkgs.ruby;
 in
-pkgs.writeShellScriptBin "uv" ''
+pkgs.writeShellScriptBin "gem" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${uv}/bin/uv"
+  REAL_TOOL="${gem}/bin/gem"
   ${builtins.readFile ../wrappers/devbox-reminders/force-devbox.sh}
 ''

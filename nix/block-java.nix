@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  java = pkgs.jdk;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "java" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${java}/bin/java"
   ${builtins.readFile ../wrappers/devbox-reminders/block-devbox.sh}
 ''

@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  clang = pkgs.clang;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "clang" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${clang}/bin/clang"
   ${builtins.readFile ../wrappers/devbox-reminders/eject-devbox.sh}
 ''

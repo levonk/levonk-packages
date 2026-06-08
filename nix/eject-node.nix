@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  node = pkgs.nodejs;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "node" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${node}/bin/node"
   ${builtins.readFile ../wrappers/devbox-reminders/eject-devbox.sh}
 ''

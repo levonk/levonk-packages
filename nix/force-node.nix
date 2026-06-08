@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  uv = pkgs.uv;
+  node = pkgs.nodejs;
 in
-pkgs.writeShellScriptBin "uv" ''
+pkgs.writeShellScriptBin "node" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${uv}/bin/uv"
+  REAL_TOOL="${node}/bin/node"
   ${builtins.readFile ../wrappers/devbox-reminders/force-devbox.sh}
 ''

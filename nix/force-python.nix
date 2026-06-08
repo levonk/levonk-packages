@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  uv = pkgs.uv;
+  python = pkgs.python3;
 in
-pkgs.writeShellScriptBin "uv" ''
+pkgs.writeShellScriptBin "python" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${uv}/bin/uv"
+  REAL_TOOL="${python}/bin/python"
   ${builtins.readFile ../wrappers/devbox-reminders/force-devbox.sh}
 ''

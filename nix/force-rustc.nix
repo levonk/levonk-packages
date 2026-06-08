@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  uv = pkgs.uv;
+  rustc = pkgs.rustc;
 in
-pkgs.writeShellScriptBin "uv" ''
+pkgs.writeShellScriptBin "rustc" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${uv}/bin/uv"
+  REAL_TOOL="${rustc}/bin/rustc"
   ${builtins.readFile ../wrappers/devbox-reminders/force-devbox.sh}
 ''

@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  go = pkgs.go;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "go" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${go}/bin/go"
   ${builtins.readFile ../wrappers/devbox-reminders/eject-devbox.sh}
 ''

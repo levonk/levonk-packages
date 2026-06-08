@@ -365,6 +365,7 @@ cd packaging/arch/prefer-pnpm && makepkg -si
 - **Cross-ecosystem tests**: Verify generated packages
 - **Transient environments**: Isolated devbox test spaces
 - **Ripgrep-specific tests**: Dedicated test suite for search tool governance
+- **Devbox reminder tests**: Per-governance-variant tests in isolated devbox environments
 
 ### Running Tests
 
@@ -380,14 +381,61 @@ just test-comprehensive
 
 # Individual package testing
 just test-internal
+
+# Devbox reminder tests (per governance variant)
+cd tests/devbox-reminders/prefer && devbox shell   # Tests prefer-* wrappers
+cd tests/devbox-reminders/force  && devbox shell   # Tests force-* wrappers
+cd tests/devbox-reminders/block  && devbox shell   # Tests block-* wrappers
+cd tests/devbox-reminders/eject  && devbox shell   # Tests eject-* wrappers
 ```
 
 ### Test Coverage
 
-- **115 individual governance packages tested** (13 existing + 24 search tools + 44 new system tools + 34 extended packages)
+- **207 individual governance packages tested** (115 existing + 92 devbox reminder packages)
 - **11 bundle packages tested**
-- **126 test scenarios total**
+- **218 test scenarios total**
 - **Transient devbox environments for isolation**
+
+#### Devbox Reminder Test Structure
+
+The devbox reminder test suite lives in `tests/devbox-reminders/` with one directory per governance variant:
+
+```
+tests/devbox-reminders/
+├── prefer/
+│   ├── devbox.json   # init_hook runs ./test.sh
+│   └── test.sh       # Runs all 23 tools with --version
+├── force/
+│   ├── devbox.json   # init_hook runs ./test.sh
+│   └── test.sh       # Runs all 23 tools with --version
+├── block/
+│   ├── devbox.json   # init_hook runs ./test.sh
+│   └── test.sh       # Verifies all 23 tools are blocked (exit 1)
+└── eject/
+    ├── devbox.json   # init_hook runs ./test.sh
+    └── test.sh       # Runs all 23 tools with --version
+```
+
+**Adding a new devbox reminder tool:** When adding a new tool to the devbox reminder family, update all four `test.sh` scripts to include the new tool. Each script has a `test_tool` function; add a line like:
+
+```sh
+test_tool "newtool" "newtool --version"
+```
+
+The test scripts use `command -v` to gracefully skip tools not installed in the current environment, so tests will pass even when only a subset of tools are available.
+
+**To run after changes:**
+
+```bash
+# Test a single variant
+cd tests/devbox-reminders/prefer && devbox shell
+
+# Or test all four variants
+for dir in prefer force block eject; do
+  echo "=== Testing $dir ==="
+  (cd "tests/devbox-reminders/$dir" && devbox shell)
+done
+```
 
 #### Ripgrep Test Results
 
@@ -544,6 +592,63 @@ nix run .#prefer-pnpm -- --version
 - **Better error handling**: Clear error messages and safer operations
 - **Performance**: Fast Rust implementation for common use cases
 
+### Devbox Reminder Governance (92 packages)
+
+#### Development Tool Reminders → devbox run
+
+AI agents often attempt to run development tools directly on the host operating system, bypassing the project's `devbox` environment. These packages intercept common development tool invocations and remind/warn/enforce the use of `devbox run <tool>` to ensure correct toolchain configuration.
+
+**Governance types:**
+- **`prefer-*`**: Warns that `devbox run <tool>` is preferred, but still executes the tool directly (soft guidance)
+- **`force-*`**: Automatically runs `devbox run <tool>` when a `devbox.json` is found (strict enforcement)
+- **`eject-*`**: Attempts `devbox run <tool>` first, falls back to direct execution (migration aid)
+- **`block-*`**: Blocks direct tool execution entirely, requires `devbox run <tool>` (hard enforcement)
+
+#### Rust Tools
+- **cargo**: `prefer-cargo`, `force-cargo`, `block-cargo`, `eject-cargo`
+- **rustc**: `prefer-rustc`, `force-rustc`, `block-rustc`, `eject-rustc`
+
+#### Node.js / TypeScript Tools
+- **tsc**: `prefer-tsc`, `force-tsc`, `block-tsc`, `eject-tsc`
+- **node**: `prefer-node`, `force-node`, `block-node`, `eject-node`
+
+#### Python Tools
+- **python3**: `prefer-python3`, `force-python3`, `block-python3`, `eject-python3`
+- **python**: `prefer-python`, `force-python`, `block-python`, `eject-python`
+- **pip**: `prefer-pip`, `force-pip`, `block-pip`, `eject-pip`
+- **pip3**: `prefer-pip3`, `force-pip3`, `block-pip3`, `eject-pip3`
+- **uv**: `prefer-uv`, `force-uv`, `block-uv`, `eject-uv`
+
+#### Java Tools
+- **java**: `prefer-java`, `force-java`, `block-java`, `eject-java`
+- **javac**: `prefer-javac`, `force-javac`, `block-javac`, `eject-javac`
+
+#### Go / Swift
+- **go**: `prefer-go`, `force-go`, `block-go`, `eject-go`
+- **swift**: `prefer-swift`, `force-swift`, `block-swift`, `eject-swift`
+
+#### Build Tools
+- **make**: `prefer-make`, `force-make`, `block-make`, `eject-make`
+- **cmake**: `prefer-cmake`, `force-cmake`, `block-cmake`, `eject-cmake`
+- **ninja**: `prefer-ninja`, `force-ninja`, `block-ninja`, `eject-ninja`
+- **just**: `prefer-just`, `force-just`, `block-just`, `eject-just`
+
+#### C/C++ Tools
+- **gcc**: `prefer-gcc`, `force-gcc`, `block-gcc`, `eject-gcc`
+- **g++**: `prefer-gpp`, `force-gpp`, `block-gpp`, `eject-gpp` (Nix attribute names; binaries still named `g++`)
+- **clang**: `prefer-clang`, `force-clang`, `block-clang`, `eject-clang`
+
+#### .NET / Ruby
+- **dotnet**: `prefer-dotnet`, `force-dotnet`, `block-dotnet`, `eject-dotnet`
+- **ruby**: `prefer-ruby`, `force-ruby`, `block-ruby`, `eject-ruby`
+- **gem**: `prefer-gem`, `force-gem`, `block-gem`, `eject-gem`
+
+#### Why Devbox Reminders?
+- **Consistent toolchains**: Ensures agents use the exact Rust, Python, Node.js, etc. versions defined in `devbox.json`
+- **Reproducible builds**: Prevents "works on my machine" issues caused by host OS tool versions
+- **AI agent discipline**: Trains automated agents to check for `devbox.json` before invoking tools
+- **Zero-config enforcement**: `force-*` packages automatically route to `devbox run` without agent intervention
+
 ### Bundle Packages (11 packages)
 - **`nodejs-ecosystem`** - All Node.js package manager governance
 - **`python-ecosystem`** - Python package manager governance
@@ -555,7 +660,7 @@ nix run .#prefer-pnpm -- --version
 - **`find-tools`** - All file finding tool governance
 - **`locate-tools`** - All file locating tool governance
 - **`text-tools`** - All text processing tool governance
-- **`command-governance`** - All 115 governance packages (47 existing + 24 search tools + 44 new system tools)
+- **`command-governance`** - All 207 governance packages (115 existing + 92 devbox reminder packages)
 
 ## Search Tool Governance: ripgrep
 

@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  uv = pkgs.uv;
+  ruby = pkgs.ruby;
 in
-pkgs.writeShellScriptBin "uv" ''
+pkgs.writeShellScriptBin "ruby" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${uv}/bin/uv"
+  REAL_TOOL="${ruby}/bin/ruby"
   ${builtins.readFile ../wrappers/devbox-reminders/force-devbox.sh}
 ''

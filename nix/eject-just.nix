@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  just = pkgs.just;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "just" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${just}/bin/just"
   ${builtins.readFile ../wrappers/devbox-reminders/eject-devbox.sh}
 ''

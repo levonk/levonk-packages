@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  uv = pkgs.uv;
+  tsc = pkgs.typescript;
 in
-pkgs.writeShellScriptBin "uv" ''
+pkgs.writeShellScriptBin "tsc" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${uv}/bin/uv"
+  REAL_TOOL="${tsc}/bin/tsc"
   ${builtins.readFile ../wrappers/devbox-reminders/force-devbox.sh}
 ''

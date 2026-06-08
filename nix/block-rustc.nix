@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  rustc = pkgs.rustc;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "rustc" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${rustc}/bin/rustc"
   ${builtins.readFile ../wrappers/devbox-reminders/block-devbox.sh}
 ''

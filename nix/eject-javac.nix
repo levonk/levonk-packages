@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  javac = pkgs.jdk;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "javac" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${javac}/bin/javac"
   ${builtins.readFile ../wrappers/devbox-reminders/eject-devbox.sh}
 ''

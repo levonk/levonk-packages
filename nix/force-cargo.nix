@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  uv = pkgs.uv;
+  cargo = pkgs.cargo;
 in
-pkgs.writeShellScriptBin "uv" ''
+pkgs.writeShellScriptBin "cargo" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${uv}/bin/uv"
+  REAL_TOOL="${cargo}/bin/cargo"
   ${builtins.readFile ../wrappers/devbox-reminders/force-devbox.sh}
 ''

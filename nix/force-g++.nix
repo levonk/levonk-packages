@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  uv = pkgs.uv;
+  gpp = pkgs.gcc;
 in
-pkgs.writeShellScriptBin "uv" ''
+pkgs.writeShellScriptBin "g++" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${uv}/bin/uv"
+  REAL_TOOL="${gpp}/bin/g++"
   ${builtins.readFile ../wrappers/devbox-reminders/force-devbox.sh}
 ''

@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  uv = pkgs.uv;
+  clang = pkgs.clang;
 in
-pkgs.writeShellScriptBin "uv" ''
+pkgs.writeShellScriptBin "clang" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${uv}/bin/uv"
+  REAL_TOOL="${clang}/bin/clang"
   ${builtins.readFile ../wrappers/devbox-reminders/force-devbox.sh}
 ''

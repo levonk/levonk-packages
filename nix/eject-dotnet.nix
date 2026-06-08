@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  dotnet = pkgs.dotnet-sdk;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "dotnet" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${dotnet}/bin/dotnet"
   ${builtins.readFile ../wrappers/devbox-reminders/eject-devbox.sh}
 ''

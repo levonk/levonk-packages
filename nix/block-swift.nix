@@ -1,10 +1,6 @@
 { pkgs }:
 
-let
-  pip = pkgs.python3;
-in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "swift" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
   ${builtins.readFile ../wrappers/devbox-reminders/block-devbox.sh}
 ''

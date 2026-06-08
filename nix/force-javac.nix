@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  uv = pkgs.uv;
+  javac = pkgs.jdk;
 in
-pkgs.writeShellScriptBin "uv" ''
+pkgs.writeShellScriptBin "javac" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${uv}/bin/uv"
+  REAL_TOOL="${javac}/bin/javac"
   ${builtins.readFile ../wrappers/devbox-reminders/force-devbox.sh}
 ''

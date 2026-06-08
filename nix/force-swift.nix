@@ -1,10 +1,6 @@
 { pkgs }:
 
-let
-  uv = pkgs.uv;
-in
-pkgs.writeShellScriptBin "uv" ''
+pkgs.writeShellScriptBin "swift" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${uv}/bin/uv"
   ${builtins.readFile ../wrappers/devbox-reminders/force-devbox.sh}
 ''

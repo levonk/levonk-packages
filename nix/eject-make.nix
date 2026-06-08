@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  make = pkgs.gnumake;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "make" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${make}/bin/make"
   ${builtins.readFile ../wrappers/devbox-reminders/eject-devbox.sh}
 ''

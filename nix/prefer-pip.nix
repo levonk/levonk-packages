@@ -6,5 +6,5 @@ in
 pkgs.writeShellScriptBin "pip" ''
   #!/usr/bin/env sh
   REAL_TOOL="${pip}/bin/pip"
-  ${builtins.readFile ../wrappers/devbox-reminders/eject-devbox.sh}
+  ${builtins.readFile ../wrappers/devbox-reminders/prefer-pip.sh}
 ''

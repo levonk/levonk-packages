@@ -1,10 +1,10 @@
 { pkgs }:
 
 let
-  pip = pkgs.python3;
+  cmake = pkgs.cmake;
 in
-pkgs.writeShellScriptBin "pip" ''
+pkgs.writeShellScriptBin "cmake" ''
   #!/usr/bin/env sh
-  REAL_TOOL="${pip}/bin/pip"
+  REAL_TOOL="${cmake}/bin/cmake"
   ${builtins.readFile ../wrappers/devbox-reminders/eject-devbox.sh}
 ''
