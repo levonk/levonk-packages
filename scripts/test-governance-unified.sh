@@ -37,10 +37,9 @@ load_config() {
 # Test a single governance package
 test_package() {
     local package_name="$1"
-    local package_type="$2"
-    local expected_behavior="$3"
+    local expected_behavior="$2"
     
-    log_info "Testing $package_name ($package_type - $expected_behavior)"
+    log_info "Testing $package_name ($expected_behavior)"
     
     # Create test results directory
     mkdir -p "$RESULTS_DIR"
@@ -65,6 +64,12 @@ test_package() {
             ;;
         eject)
             test_eject_package "$package_name"
+            ;;
+        rtk-wrap)
+            test_rtk_wrap_package "$package_name"
+            ;;
+        devbox-auto)
+            test_devbox_auto_package "$package_name"
             ;;
         *)
             log_error "Unknown behavior type: $expected_behavior"
@@ -133,6 +138,44 @@ test_eject_package() {
     fi
 }
 
+# Test RTK wrap packages
+test_rtk_wrap_package() {
+    local package_name="$1"
+    local output
+    # Set RTK_WRAPPER_IN_PROGRESS to test recursion prevention
+    export RTK_WRAPPER_IN_PROGRESS=1
+    output=$(nix run ".#$package_name" -- --version 2>&1 || true)
+    unset RTK_WRAPPER_IN_PROGRESS
+    
+    # Should fall back to native command when RTK_WRAPPER_IN_PROGRESS is set
+    if echo "$output" | grep -q "version\|Version"; then
+        log_success "RTK wrapper with recursion prevention works"
+        echo "PASSED" > "$RESULTS_DIR/${package_name}-result.txt"
+    else
+        log_error "RTK wrapper recursion prevention failed"
+        echo "FAILED" > "$RESULTS_DIR/${package_name}-result.txt"
+    fi
+}
+
+# Test devbox-auto packages
+test_devbox_auto_package() {
+    local package_name="$1"
+    local output
+    # Set DEVBOX_AUTO_IN_PROGRESS to test recursion prevention
+    export DEVBOX_AUTO_IN_PROGRESS=1
+    output=$(nix run ".#$package_name" -- --version 2>&1 || true)
+    unset DEVBOX_AUTO_IN_PROGRESS
+    
+    # Should fall back to native command when DEVBOX_AUTO_IN_PROGRESS is set
+    if echo "$output" | grep -q "version\|Version\|command not found"; then
+        log_success "Devbox-auto wrapper with recursion prevention works"
+        echo "PASSED" > "$RESULTS_DIR/${package_name}-result.txt"
+    else
+        log_error "Devbox-auto wrapper recursion prevention failed"
+        echo "FAILED" > "$RESULTS_DIR/${package_name}-result.txt"
+    fi
+}
+
 # Test package family (all variants of a tool)
 test_package_family() {
     local tool="$1"
@@ -143,7 +186,7 @@ test_package_family() {
     for variant in "${variants[@]}"; do
         local package_name="${variant}-${tool}"
         if nix flake metadata --json 2>/dev/null | grep -q "\"$package_name\""; then
-            test_package "$package_name" "$tool" "$variant"
+            test_package "$package_name" "$variant"
         else
             log_warning "Package $package_name not found, skipping"
         fi
@@ -203,6 +246,14 @@ main() {
             test_package_family "bun"
             test_package_family "pip"
             test_package_family "grep"
+            # Test RTK wrapper packages
+            test_rtk_wrap_package "rtk-wrap-ls"
+            test_rtk_wrap_package "rtk-wrap-git"
+            test_rtk_wrap_package "rtk-wrap-npm"
+            # Test devbox-auto packages
+            test_devbox_auto_package "devbox-auto-npm"
+            test_devbox_auto_package "devbox-auto-python"
+            test_devbox_auto_package "devbox-auto-cargo"
             test_package_family "ag"
             test_package_family "git-grep"
             test_package_family "ucg"
@@ -226,19 +277,30 @@ main() {
             test_package_family "sift"
             ;;
         *)
-            if [[ "$test_target" =~ ^(prefer|force|block|eject)-.+$ ]]; then
-                local tool=$(echo "$test_target" | sed 's/^(prefer|force|block|eject)-//')
-                local behavior=$(echo "$test_target" | sed 's/-.*$//')
-                test_package "$test_target" "$tool" "$behavior"
+            if [[ "$test_target" =~ ^(prefer|force|block|eject|rtk-wrap|devbox-auto)-.+$ ]]; then
+                local package_name="$test_target"
+                local behavior
+                case "$test_target" in
+                    rtk-wrap-*) behavior="rtk-wrap" ;;
+                    devbox-auto-*) behavior="devbox-auto" ;;
+                    prefer-*) behavior="prefer" ;;
+                    force-*) behavior="force" ;;
+                    block-*) behavior="block" ;;
+                    eject-*) behavior="eject" ;;
+                esac
+                test_package "$package_name" "$behavior"
             else
                 log_error "Unknown test target: $test_target"
-                echo "Usage: $0 [all|nodejs|search|[prefer|force|block|eject]-tool]"
+                echo "Usage: $0 [all|nodejs|search|[prefer|force|block|eject|rtk-wrap|devbox-auto]-tool]"
                 exit 1
             fi
             ;;
     esac
     
-    generate_report
+    # Generate report for all cases except individual package tests
+    if [[ ! "$test_target" =~ ^(prefer|force|block|eject)-.+$ ]]; then
+        generate_report
+    fi
 }
 
 # Run main function with all arguments

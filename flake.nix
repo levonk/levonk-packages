@@ -183,6 +183,98 @@
         force-gem = import ./nix/force-gem.nix { inherit pkgs; };
         block-gem = import ./nix/block-gem.nix { inherit pkgs; };
         eject-gem = import ./nix/eject-gem.nix { inherit pkgs; };
+        
+        # RTK wrapper packages
+        rtk-wrap-ls = import ./nix/rtk-wrap-ls.nix { inherit pkgs; };
+        rtk-wrap-tree = import ./nix/rtk-wrap-tree.nix { inherit pkgs; };
+        rtk-wrap-git = import ./nix/rtk-wrap-git.nix { inherit pkgs; };
+        rtk-wrap-grep = import ./nix/rtk-wrap-grep.nix { inherit pkgs; };
+        rtk-wrap-find = import ./nix/rtk-wrap-find.nix { inherit pkgs; };
+        rtk-wrap-cat = import ./nix/rtk-wrap-cat.nix { inherit pkgs; };
+        rtk-wrap-npm = import ./nix/rtk-wrap-npm.nix { inherit pkgs; };
+        rtk-wrap-npx = import ./nix/rtk-wrap-npx.nix { inherit pkgs; };
+        rtk-wrap-tsc = import ./nix/rtk-wrap-tsc.nix { inherit pkgs; };
+        rtk-wrap-jest = import ./nix/rtk-wrap-jest.nix { inherit pkgs; };
+        rtk-wrap-vitest = import ./nix/rtk-wrap-vitest.nix { inherit pkgs; };
+        rtk-wrap-pytest = import ./nix/rtk-wrap-pytest.nix { inherit pkgs; };
+        rtk-wrap-mypy = import ./nix/rtk-wrap-mypy.nix { inherit pkgs; };
+        rtk-wrap-ruff = import ./nix/rtk-wrap-ruff.nix { inherit pkgs; };
+        rtk-wrap-prettier = import ./nix/rtk-wrap-prettier.nix { inherit pkgs; };
+        rtk-wrap-eslint = import ./nix/rtk-wrap-eslint.nix { inherit pkgs; };
+        rtk-wrap-gh = import ./nix/rtk-wrap-gh.nix { inherit pkgs; };
+        rtk-wrap-diff = import ./nix/rtk-wrap-diff.nix { inherit pkgs; };
+        rtk-wrap-curl = import ./nix/rtk-wrap-curl.nix { inherit pkgs; };
+        rtk-wrap-wc = import ./nix/rtk-wrap-wc.nix { inherit pkgs; };
+        rtk-wrap-docker = import ./nix/rtk-wrap-docker.nix { inherit pkgs; };
+        rtk-wrap-kubectl = import ./nix/rtk-wrap-kubectl.nix { inherit pkgs; };
+        rtk-wrap-cargo = import ./nix/rtk-wrap-cargo.nix { inherit pkgs; };
+        rtk-wrap-pip = import ./nix/rtk-wrap-pip.nix { inherit pkgs; };
+        rtk-wrap-dotnet = import ./nix/rtk-wrap-dotnet.nix { inherit pkgs; };
+        rtk-wrap-aws = import ./nix/rtk-wrap-aws.nix { inherit pkgs; };
+        rtk-wrap-psql = import ./nix/rtk-wrap-psql.nix { inherit pkgs; };
+        rtk-wrap-json = import ./nix/rtk-wrap-json.nix { inherit pkgs; };
+        rtk-wrap-env = import ./nix/rtk-wrap-env.nix { inherit pkgs; };
+        rtk-wrap-deps = import ./nix/rtk-wrap-deps.nix { inherit pkgs; };
+        rtk-wrap-test = import ./nix/rtk-wrap-test.nix { inherit pkgs; };
+        rtk-wrap-err = import ./nix/rtk-wrap-err.nix { inherit pkgs; };
+        rtk-wrap-pnpm = import ./nix/rtk-wrap-pnpm.nix { inherit pkgs; };
+        rtk-wrap-prisma = import ./nix/rtk-wrap-prisma.nix { inherit pkgs; };
+        rtk-wrap-next = import ./nix/rtk-wrap-next.nix { inherit pkgs; };
+        rtk-wrap-lint = import ./nix/rtk-wrap-lint.nix { inherit pkgs; };
+        rtk-wrap-format = import ./nix/rtk-wrap-format.nix { inherit pkgs; };
+        rtk-wrap-playwright = import ./nix/rtk-wrap-playwright.nix { inherit pkgs; };
+        rtk-wrap-glab = import ./nix/rtk-wrap-glab.nix { inherit pkgs; };
+        rtk-wrap-wget = import ./nix/rtk-wrap-wget.nix { inherit pkgs; };
+        rtk-wrap-go = import ./nix/rtk-wrap-go.nix { inherit pkgs; };
+        rtk-wrap-gt = import ./nix/rtk-wrap-gt.nix { inherit pkgs; };
+        rtk-wrap-golangci-lint = import ./nix/rtk-wrap-golangci-lint.nix { inherit pkgs; };
+        rtk-wrap-rubocop = import ./nix/rtk-wrap-rubocop.nix { inherit pkgs; };
+        rtk-wrap-rake = import ./nix/rtk-wrap-rake.nix { inherit pkgs; };
+        rtk-wrap-rspec = import ./nix/rtk-wrap-rspec.nix { inherit pkgs; };
+        rtk-wrap-oc = import ./nix/rtk-wrap-oc.nix { inherit pkgs; };
+        rtk-wrap-gradlew = import ./nix/rtk-wrap-gradlew.nix { inherit pkgs; };
+        
+        # RTK bundle packages
+        bundle-rtk-core = import ./nix/bundle-rtk-core.nix { inherit pkgs; };
+        bundle-rtk-development = import ./nix/bundle-rtk-development.nix { inherit pkgs; };
+        bundle-rtk-cloud = import ./nix/bundle-rtk-cloud.nix { inherit pkgs; };
+        bundle-rtk-all = import ./nix/bundle-rtk-all.nix { inherit pkgs; };
+        
+        # Devbox auto-wrapper packages
+        devbox-auto-npm = import ./nix/devbox-auto-npm.nix { inherit pkgs; };
+        devbox-auto-pnpm = import ./nix/devbox-auto-pnpm.nix { inherit pkgs; };
+        devbox-auto-yarn = import ./nix/devbox-auto-yarn.nix { inherit pkgs; };
+        devbox-auto-python = import ./nix/devbox-auto-python.nix { inherit pkgs; };
+        devbox-auto-pip = import ./nix/devbox-auto-pip.nix { inherit pkgs; };
+        devbox-auto-cargo = import ./nix/devbox-auto-cargo.nix { inherit pkgs; };
+        devbox-auto-rustc = import ./nix/devbox-auto-rustc.nix { inherit pkgs; };
+        devbox-auto-go = import ./nix/devbox-auto-go.nix { inherit pkgs; };
+        
+        # Devbox auto bundle packages
+        bundle-devbox-auto-nodejs = import ./nix/bundle-devbox-auto-nodejs.nix { inherit pkgs; };
+        bundle-devbox-auto-python = import ./nix/bundle-devbox-auto-python.nix { inherit pkgs; };
+        bundle-devbox-auto-rust = import ./nix/bundle-devbox-auto-rust.nix { inherit pkgs; };
+        bundle-devbox-auto-go = import ./nix/bundle-devbox-auto-go.nix { inherit pkgs; };
+        bundle-devbox-auto-all = import ./nix/bundle-devbox-auto-all.nix { inherit pkgs; };
+        
+        # Integrated devbox-rtk-governance packages
+        devbox-rtk-nodejs-pnpm-force = import ./nix/devbox-rtk-nodejs-pnpm-force.nix { inherit pkgs; };
+        devbox-rtk-nodejs-pnpm-prefer = import ./nix/devbox-rtk-nodejs-pnpm-prefer.nix { inherit pkgs; };
+        devbox-rtk-nodejs-pnpm-block = import ./nix/devbox-rtk-nodejs-pnpm-block.nix { inherit pkgs; };
+        devbox-rtk-nodejs-pnpm-native = import ./nix/devbox-rtk-nodejs-pnpm-native.nix { inherit pkgs; };
+        devbox-rtk-nodejs-yarn-force = import ./nix/devbox-rtk-nodejs-yarn-force.nix { inherit pkgs; };
+        devbox-rtk-nodejs-yarn-prefer = import ./nix/devbox-rtk-nodejs-yarn-prefer.nix { inherit pkgs; };
+        devbox-rtk-nodejs-yarn-block = import ./nix/devbox-rtk-nodejs-yarn-block.nix { inherit pkgs; };
+        devbox-rtk-nodejs-yarn-native = import ./nix/devbox-rtk-nodejs-yarn-native.nix { inherit pkgs; };
+        devbox-rtk-nodejs-bun-force = import ./nix/devbox-rtk-nodejs-bun-force.nix { inherit pkgs; };
+        devbox-rtk-nodejs-bun-prefer = import ./nix/devbox-rtk-nodejs-bun-prefer.nix { inherit pkgs; };
+        devbox-rtk-nodejs-bun-block = import ./nix/devbox-rtk-nodejs-bun-block.nix { inherit pkgs; };
+        devbox-rtk-nodejs-bun-native = import ./nix/devbox-rtk-nodejs-bun-native.nix { inherit pkgs; };
+        devbox-rtk-python-uv-force = import ./nix/devbox-rtk-python-uv-force.nix { inherit pkgs; };
+        devbox-rtk-python-uv-prefer = import ./nix/devbox-rtk-python-uv-prefer.nix { inherit pkgs; };
+        devbox-rtk-python-uv-block = import ./nix/devbox-rtk-python-uv-block.nix { inherit pkgs; };
+        devbox-rtk-python-uv-native = import ./nix/devbox-rtk-python-uv-native.nix { inherit pkgs; };
+        
         # Bundle package
         command-governance = import ./nix/bundle-command-governance.nix { inherit pkgs; };
         
@@ -363,6 +455,98 @@
           inherit force-gem;
           inherit block-gem;
           inherit eject-gem;
+          
+          # RTK wrapper packages
+          inherit rtk-wrap-ls;
+          inherit rtk-wrap-tree;
+          inherit rtk-wrap-git;
+          inherit rtk-wrap-grep;
+          inherit rtk-wrap-find;
+          inherit rtk-wrap-cat;
+          inherit rtk-wrap-npm;
+          inherit rtk-wrap-npx;
+          inherit rtk-wrap-tsc;
+          inherit rtk-wrap-jest;
+          inherit rtk-wrap-vitest;
+          inherit rtk-wrap-pytest;
+          inherit rtk-wrap-mypy;
+          inherit rtk-wrap-ruff;
+          inherit rtk-wrap-prettier;
+          inherit rtk-wrap-eslint;
+          inherit rtk-wrap-gh;
+          inherit rtk-wrap-diff;
+          inherit rtk-wrap-curl;
+          inherit rtk-wrap-wc;
+          inherit rtk-wrap-docker;
+          inherit rtk-wrap-kubectl;
+          inherit rtk-wrap-cargo;
+          inherit rtk-wrap-pip;
+          inherit rtk-wrap-dotnet;
+          inherit rtk-wrap-aws;
+          inherit rtk-wrap-psql;
+          inherit rtk-wrap-json;
+          inherit rtk-wrap-env;
+          inherit rtk-wrap-deps;
+          inherit rtk-wrap-test;
+          inherit rtk-wrap-err;
+          inherit rtk-wrap-pnpm;
+          inherit rtk-wrap-prisma;
+          inherit rtk-wrap-next;
+          inherit rtk-wrap-lint;
+          inherit rtk-wrap-format;
+          inherit rtk-wrap-playwright;
+          inherit rtk-wrap-glab;
+          inherit rtk-wrap-wget;
+          inherit rtk-wrap-go;
+          inherit rtk-wrap-gt;
+          inherit rtk-wrap-golangci-lint;
+          inherit rtk-wrap-rubocop;
+          inherit rtk-wrap-rake;
+          inherit rtk-wrap-rspec;
+          inherit rtk-wrap-oc;
+          inherit rtk-wrap-gradlew;
+          
+          # RTK bundle packages
+          inherit bundle-rtk-core;
+          inherit bundle-rtk-development;
+          inherit bundle-rtk-cloud;
+          inherit bundle-rtk-all;
+          
+          # Devbox auto-wrapper packages
+          inherit devbox-auto-npm;
+          inherit devbox-auto-pnpm;
+          inherit devbox-auto-yarn;
+          inherit devbox-auto-python;
+          inherit devbox-auto-pip;
+          inherit devbox-auto-cargo;
+          inherit devbox-auto-rustc;
+          inherit devbox-auto-go;
+          
+          # Devbox auto bundle packages
+          inherit bundle-devbox-auto-nodejs;
+          inherit bundle-devbox-auto-python;
+          inherit bundle-devbox-auto-rust;
+          inherit bundle-devbox-auto-go;
+          inherit bundle-devbox-auto-all;
+          
+          # Integrated devbox-rtk-governance packages
+          inherit devbox-rtk-nodejs-pnpm-force;
+          inherit devbox-rtk-nodejs-pnpm-prefer;
+          inherit devbox-rtk-nodejs-pnpm-block;
+          inherit devbox-rtk-nodejs-pnpm-native;
+          inherit devbox-rtk-nodejs-yarn-force;
+          inherit devbox-rtk-nodejs-yarn-prefer;
+          inherit devbox-rtk-nodejs-yarn-block;
+          inherit devbox-rtk-nodejs-yarn-native;
+          inherit devbox-rtk-nodejs-bun-force;
+          inherit devbox-rtk-nodejs-bun-prefer;
+          inherit devbox-rtk-nodejs-bun-block;
+          inherit devbox-rtk-nodejs-bun-native;
+          inherit devbox-rtk-python-uv-force;
+          inherit devbox-rtk-python-uv-prefer;
+          inherit devbox-rtk-python-uv-block;
+          inherit devbox-rtk-python-uv-native;
+          
           nodejs-ecosystem = import ./nix/nodejs-ecosystem.nix { inherit pkgs; };
           python-ecosystem = import ./nix/python-ecosystem.nix { inherit pkgs; };
           dev-tools = import ./nix/dev-tools.nix { inherit pkgs; };
