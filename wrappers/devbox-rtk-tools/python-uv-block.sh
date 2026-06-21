@@ -1,5 +1,4 @@
-#!/usr/bin/env sh
-# Integrated devbox + RTK + governance wrapper for Python with pip blocked
+#!/usr/bin/env bash
 # Combines: environment management (devbox) + token optimization (RTK) + tool governance (block pip)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

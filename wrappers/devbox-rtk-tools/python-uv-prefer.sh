@@ -1,5 +1,4 @@
-#!/usr/bin/env sh
-# Integrated devbox + RTK + governance wrapper for Python with uv preferred
+#!/usr/bin/env bash
 # Combines: environment management (devbox) + token optimization (RTK) + tool governance (prefer pip→uv)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

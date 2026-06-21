@@ -1,5 +1,4 @@
-#!/usr/bin/env sh
-# Integrated devbox + RTK + governance wrapper for Node.js with pnpm preferred
+#!/usr/bin/env bash
 # Combines: environment management (devbox) + token optimization (RTK) + tool governance (prefer npm→pnpm)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
