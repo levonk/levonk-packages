@@ -1,5 +1,9 @@
 # Agent Documentation: Command Preference & Package Governance System
 
+## Purpose
+
+This document guides agents in creating new packages for the levonk-packages governance system. For information about existing packages, counts, and installation, see [README.md](README.md). For detailed documentation about specific package classes, see the [docs/](docs/) directory.
+
 ## Quick Reference
 
 - **Project Type**: Multi-package-manager governance system with Nix flake packages
@@ -14,13 +18,15 @@
 ├── flake.nix                    # Nix flake definitions for all packages
 ├── justfile                     # Command runner with all build/generate/test commands
 ├── devbox.json                  # Devbox environment configuration
-├── wrappers/                    # Source wrapper scripts (115 files)
-│   ├── npm.prefer-pnpm.sh      # Example: npm → pnpm wrapper
-│   ├── pip.prefer-uv.sh        # Example: pip → uv wrapper
-│   └── utils/detect-packages.sh # Dynamic package detection
-├── nix/                         # Nix derivations (115 files)
-│   ├── prefer-pnpm.nix         # Individual package derivations
-│   └── bundle-command-governance.nix # Bundle packages
+├── wrappers/                    # Source wrapper scripts (organized by tool class)
+│   ├── nodejs-tools/           # Node.js package manager wrappers
+│   ├── python-tools/           # Python package manager wrappers
+│   ├── search-tools/           # Search tool wrappers
+│   ├── rtk-tools/              # RTK token optimization wrappers
+│   ├── devbox-auto-tools/      # Devbox environment management wrappers
+│   ├── devbox-rtk-tools/       # Integrated devbox + RTK + governance wrappers
+│   └── utils/                  # Shared utility scripts
+├── nix/                         # Nix derivations (organized by package class)
 ├── packaging/                   # Package generators for all ecosystems
 │   ├── alpine/generate-apk.sh   # Alpine APK generator
 │   ├── debian/generate-deb.sh   # Debian DEB generator
@@ -29,11 +35,77 @@
 │   ├── brew/generate-formula.rb  # Homebrew formula generator
 │   └── mise/generate-mise-plugins.sh # mise plugin generator
 ├── scripts/                     # Utility and test scripts
-├── docs/                        # Documentation and specs
+├── docs/                        # Detailed documentation for package classes
 └── .tickets/                    # tkr ticket tracking system
 ```
 
 ## Core Concepts
+
+### Integrated Package Philosophy
+
+**IMPORTANT**: When adding new tools or ecosystems, **always use integrated `devbox-rtk-*` packages** rather than creating separate wrapper systems.
+
+### Why Integrated Packages?
+
+**Problem with Separate Systems**:
+- `prefer-pnpm` + `devbox-auto-npm` + `rtk-wrap-npm` = **Conflicting behavior**
+- Multiple wrappers can interfere with each other
+- Unclear which system takes precedence
+- Complex dependency management
+
+**Solution with Integrated Packages**:
+- `devbox-rtk-nodejs-pnpm-force` = **Single coherent package**
+- Clear governance intent in package name
+- No conflicts between systems
+- Predictable behavior
+
+### Package Design Principles
+
+1. **Single Source of Truth**: One package per tool ecosystem + governance type
+2. **Clear Naming**: Package name shows ecosystem, preferred tool, and governance
+3. **Complete Coverage**: Each package handles environment + preference + optimization
+4. **No Conflicts**: Integrated logic prevents wrapper interference
+5. **AI Agent Friendly**: Predictable behavior for automated systems
+
+### When to Use Each Package Type
+
+| Scenario | Package Type | Example |
+|----------|-------------|---------|
+| Tool replacement only | `prefer-*`, `force-*`, `block-*` | `prefer-pnpm` |
+| Environment management only | `devbox-auto-*` | `devbox-auto-python` |
+| Token optimization only | `rtk-wrap-*` | `rtk-wrap-ls` |
+| **Complete solution** | **`devbox-rtk-*`** | **`devbox-rtk-nodejs-pnpm-force`** |
+
+### Package Naming Convention
+
+```
+devbox-rtk-{ecosystem}-{preferred-tool}-{governance-type}
+```
+
+**Examples**:
+- `devbox-rtk-nodejs-pnpm-prefer` - Node.js ecosystem, prefer pnpm (soft guidance)
+- `devbox-rtk-nodejs-pnpm-force` - Node.js ecosystem, force pnpm (strict replacement)
+- `devbox-rtk-nodejs-pnpm-block` - Node.js ecosystem, block npm (error)
+- `devbox-rtk-nodejs-pnpm-native` - Node.js ecosystem, use npm as-is (no governance)
+
+**Ecosystems**: `nodejs`, `python`, `rust`, `go`, `dotnet`, etc.
+**Governance Types**: `prefer`, `force`, `block`, `native`
+
+### Adding New Tool Ecosystems
+
+**ALWAYS follow this sequence**:
+
+1. **Assess Requirements**: Determine if the tool needs:
+   - Environment management (devbox)
+   - Token optimization (RTK)
+   - Tool governance (prefer/force/block)
+
+2. **Create Integrated Packages**: If any combination is needed, create `devbox-rtk-*` packages
+3. **Use Generators**: Run `./scripts/generate-devbox-rtk-suite.sh {ecosystem}`
+4. **Test Integration**: Verify all three concerns work together
+5. **Document**: Update AGENTS.md with ecosystem information
+
+**NEVER create separate wrapper systems** that might conflict with existing ones.
 
 ### Package Governance Types
 
@@ -54,7 +126,30 @@
 
 4. **`block-*`** - Complete prohibition
    - Depends on `eject-*`
-   - Replaces disfavored tool with error-exiting wrapper
+   - Replaces disfavored command with error-exiting wrapper
+
+5. **`rtk-wrap-*`** - RTK token optimization wrappers
+   - Transparently intercepts commands and runs them through RTK
+   - Falls back to native command if RTK is not installed
+   - Designed for AI agent environments to minimize token consumption
+   - No dependency enforcement - works with or without RTK installed
+   - **DEPRECATED**: Use integrated `devbox-rtk-*` packages instead
+
+6. **`devbox-auto-*`** - Devbox environment management wrappers
+   - Automatically ensures tools are available via devbox
+   - Adds missing packages to devbox.json automatically
+   - Runs commands via `devbox run --` when needed
+   - Recursion prevention for devbox environments
+   - Falls back to native command if no devbox.json exists
+   - **DEPRECATED**: Use integrated `devbox-rtk-*` packages instead
+
+7. **`devbox-rtk-*`** - Integrated environment + optimization + governance packages
+   - Combines devbox environment management, RTK token optimization, and tool governance
+   - Naming convention: `devbox-rtk-{ecosystem}-{preferred-tool}-{governance-type}`
+   - Governance types: `prefer`, `force`, `block`, `native`
+   - Single package handles all concerns: environment setup, tool preference, and output optimization
+   - Prevents conflicts between separate wrapper systems
+   - **RECOMMENDED**: Use these for new tool integrations
 
 ### Package Ecosystems
 
@@ -67,28 +162,28 @@
 
 ```bash
 # Clone and bootstrap
-git clone https://github.com/levonk/levonk-packages.git
+devbox run -- rtk git clone https://github.com/levonk/levonk-packages.git
 cd levonk-packages
-just bootstrap
+devbox run -- rtk just bootstrap-internal
 
 # Verify environment
-just doctor
+devbox run -- rtk just doctor-internal
 ```
 
 ### Daily Commands
 
 ```bash
 # Build all Nix packages
-just build
+devbox run -- rtk just build-internal
 
 # Test package functionality
-just test
+devbox run -- rtk just test-internal
 
 # Generate packages for all ecosystems
-just generate
+devbox run -- rtk just generate-internal
 
 # Quick validation
-just test-comprehensive
+devbox run -- rtk just test-comprehensive-internal
 ```
 
 ### Critical Implementation Steps
@@ -127,6 +222,18 @@ For new tool ecosystems, use the automated generation system:
 ./scripts/generate-governance-suite.sh curl all        # Everything
 
 # Available tools: npm, pnpm, yarn, bun, pip, grep, ag, git-grep, ucg, pt, sift, sudo, curl, wget, find, locate, sed
+
+# Generate RTK wrapper packages
+./scripts/generate-rtk-suite.sh suite           # Complete RTK suite
+./scripts/generate-rtk-suite.sh wrappers        # Wrapper scripts only
+./scripts/generate-rtk-suite.sh nix             # Nix derivations only
+./scripts/generate-rtk-suite.sh flake           # Update flake.nix only
+
+# Generate devbox-auto wrapper packages
+./scripts/generate-devbox-auto-suite.sh suite   # Complete devbox-auto suite
+./scripts/generate-devbox-auto-suite.sh wrappers # Wrapper scripts only
+./scripts/generate-devbox-auto-suite.sh nix      # Nix derivations only
+./scripts/generate-devbox-auto-suite.sh flake    # Update flake.nix only
 ```
 
 **What the generator creates:**
@@ -136,13 +243,27 @@ For new tool ecosystems, use the automated generation system:
 - **Test integration** with unified test framework
 - **Git tracking** for all new files
 
+**RTK Generator creates:**
+- **54 wrapper scripts** for common commands (ls, tree, git, npm, pnpm, tsc, jest, etc.)
+- **54 Nix derivations** for RTK wrapper packages
+- **4 bundle packages** (core, development, cloud, all)
+- **Updated flake.nix** with RTK packages
+- **Centralized utility script** (`utils/rtk-wrapper.sh`) for DRY implementation
+
+**Devbox-auto Generator creates:**
+- **8 wrapper scripts** for common development tools (npm, python, cargo, etc.)
+- **8 Nix derivations** for devbox-auto wrapper packages
+- **4 bundle packages** (nodejs, python, rust, go, all)
+- **Updated flake.nix** with devbox-auto packages
+- **Centralized utility script** (`utils/devbox-manager.sh`) for devbox management
+
 ### Standardized Testing Framework
 
 **Use the unified testing framework instead of individual test scripts:**
 
 ```bash
 # Run all tests
-just test
+devbox run -- rtk just test-internal
 
 # Run specific test categories
 ./scripts/test-governance-unified.sh all
@@ -186,16 +307,19 @@ just test
 **Current Structure**:
 ```
 wrappers/
-├── nodejs-tools/     (46 files) - npm, pnpm, yarn, bun packages
-├── python-tools/     (3 files)  - pip packages  
-├── search-tools/     (24 files) - grep, ag, git-grep, ucg, pt, sift packages
-├── system-tools/     (2 files)  - curl, node packages
-├── privilege-tools/  (8 files)  - sudo, pkexec, doas, sudo-rs packages
-├── download-tools/   (10 files) - curl, wget, httpie, wget2, aria2 packages
-├── find-tools/       (8 files)  - find, fd packages
-├── locate-tools/     (8 files)  - locate, plocate packages
-├── text-tools/       (8 files)  - sed, sd packages
-└── utils/            (shared utilities)
+├── nodejs-tools/       (46 files) - npm, pnpm, yarn, bun packages
+├── python-tools/       (3 files)  - pip packages  
+├── search-tools/       (24 files) - grep, ag, git-grep, ucg, pt, sift packages
+├── system-tools/       (2 files)  - curl, node packages
+├── privilege-tools/    (8 files)  - sudo, pkexec, doas, sudo-rs packages
+├── download-tools/     (10 files) - curl, wget, httpie, wget2, aria2 packages
+├── find-tools/         (8 files)  - find, fd packages
+├── locate-tools/       (8 files)  - locate, plocate packages
+├── text-tools/         (8 files)  - sed, sd packages
+├── rtk-tools/          (54 files) - RTK token optimization wrappers (ls, tree, git, npm, pnpm, tsc, jest, etc.)
+├── devbox-auto-tools/  (8 files)  - Devbox environment management wrappers (npm, python, cargo, etc.)
+├── devbox-rtk-tools/   (16 files) - Integrated devbox + RTK + governance wrappers (nodejs, python ecosystems)
+└── utils/              (shared utilities)
 ```
 
 **Migration Results**:
@@ -212,6 +336,51 @@ wrappers/
 - Clear separation by tool type
 - Easy to find specific tools
 - Scalable for future additions
+
+### RTK Wrapper Packages
+
+**✅ COMPLETED** - Added on 2026-06-21
+
+**Purpose**: Transparently intercept AI agent commands and run them through [RTK (Rust Token Killer)](https://github.com/rtk-ai/rtk) for token-optimized output without requiring AI behavior changes.
+
+**Available RTK Wrappers**:
+- **Core Commands**: `ls`, `tree`, `cat`, `find`, `grep`, `diff`, `wc`
+- **Development Tools**: `git`, `npm`, `cargo`, `pip`
+- **Cloud & DevOps**: `gh`, `curl`, `docker`, `kubectl`
+
+**Bundle Packages**:
+- `bundle-rtk-core` - Core command wrappers (ls, tree, cat, find, grep, diff, wc)
+- `bundle-rtk-development` - Development tool wrappers (git, npm, cargo, pip, docker, kubectl)
+- `bundle-rtk-cloud` - Cloud tool wrappers (gh, curl)
+- `bundle-rtk-all` - All RTK wrappers combined
+
+**Key Features**:
+- **Transparent**: No AI agent changes required
+- **Fallback**: Works with or without RTK installed
+- **DRY**: Centralized utility script (`utils/rtk-wrapper.sh`)
+- **Extensible**: Easy to add new command wrappers
+- **Token Savings**: Automatically reduces LLM token consumption
+
+**Installation**:
+```bash
+# Install individual wrapper
+devbox run -- rtk nix profile install .#rtk-wrap-ls
+
+# Install bundle packages
+devbox run -- rtk nix profile install .#bundle-rtk-all
+```
+
+**Adding New RTK Wrappers**:
+```bash
+# Use the automated generator
+devbox run -- rtk ./scripts/generate-rtk-suite.sh suite
+
+# Or add manually:
+# 1. Create wrapper in wrappers/rtk-tools/
+# 2. Create Nix derivation in nix/rtk-wrap-<cmd>.nix
+# 3. Update flake.nix imports and packages
+# 4. Add to appropriate bundle package
+```
 
 ### Adding New Packages
 
@@ -268,15 +437,43 @@ wrappers/
    git add wrappers/newtool.* nix/*newtool* flake.nix
    ```
 
-6. **Test with**: `nix build .#prefer-newtool` and `nix run .#prefer-newtool -- --help`
+6. **Test with**: `devbox run -- rtk nix build .#prefer-newtool` and `devbox run -- rtk nix run .#prefer-newtool -- --help`
 
 7. **Update documentation** in AGENTS.md
 
-8. **Test with**: `just test` and `just generate`
+8. **Test with**: `devbox run -- rtk just test-internal` and `devbox run -- rtk just generate-internal`
 
 ### Creating Complete Package Families
 
 When creating a new tool migration (like ripgrep), you need to create all 4 governance variants for each tool:
+
+#### DRY Principles for Bulk Package Creation
+
+**CRITICAL**: When creating packages in bulk (which is the usual case), the system attempts to be DRY - **Don't Repeat Yourself**.
+
+**What this means:**
+- Do NOT repeat warning strings, error strings, or remapping logic across multiple files
+- Centralize shared logic in utility scripts or template files
+- When remapping a tool chain (e.g., Rust: cargo, rustc, clippy), use a single file that handles all commands
+- Changes to warnings, errors, or remapping behavior should only need to be made in ONE place
+
+**Example: Rust tool chain remapping**
+Instead of creating separate wrapper scripts for cargo, rustc, clippy, etc. with duplicated warning/error strings:
+- ✅ Create ONE utility file that handles the entire Rust tool chain
+- ✅ Pass the specific command as a parameter to the shared logic
+- ✅ Update warning/error messages in one place only
+
+**Example: DevBox tool remapping**
+When remapping multiple common tools to run through DevBox:
+- ✅ Use a single DevBox integration file
+- ✅ Parameterize the specific command being wrapped
+- ✅ Maintain consistent behavior across all wrapped tools
+
+**Benefits:**
+- Single point of maintenance for warnings, errors, and remapping logic
+- Consistent user experience across all wrapped tools
+- Easier to update behavior when requirements change
+- Reduced risk of inconsistencies across similar packages
 
 #### Example: Complete ripgrep ecosystem creation
 ```bash
@@ -300,14 +497,14 @@ done
 # Add each package to both imports and packages sections
 
 # 4. Add all files to git
-git add wrappers/*grep* wrappers/*ag* wrappers/*git-grep* wrappers/*ucg* wrappers/*pt* wrappers/*sift*
-git add nix/*grep* nix/*ag* nix/*git-grep* nix/*ucg* nix/*pt* nix/*sift*
-git add flake.nix AGENTS.md
+devbox run -- rtk git add wrappers/*grep* wrappers/*ag* wrappers/*git-grep* wrappers/*ucg* wrappers/*pt* wrappers/*sift*
+devbox run -- rtk git add nix/*grep* nix/*ag* nix/*git-grep* nix/*ucg* nix/*pt* nix/*sift*
+devbox run -- rtk git add flake.nix AGENTS.md
 
 # 5. Test individual packages
-nix build .#prefer-grep && nix run .#prefer-grep -- --help
-nix build .#force-ag && nix run .#force-ag -- "test" .
-nix build .#block-sift && nix run .#block-sift -- --version
+devbox run -- rtk nix build .#prefer-grep && devbox run -- rtk nix run .#prefer-grep -- --help
+devbox run -- rtk nix build .#force-ag && devbox run -- rtk nix run .#force-ag -- "test" .
+devbox run -- rtk nix build .#block-sift && devbox run -- rtk nix run .#block-sift -- --version
 
 # 6. Update documentation counts
 # Update AGENTS.md with new package totals and bundle counts
@@ -325,10 +522,10 @@ nix build .#block-sift && nix run .#block-sift -- --version
 
 ```bash
 # Generate packages for all ecosystems
-just generate
+devbox run -- rtk just generate-internal
 
 # Or specific ecosystems
-just generate-internal
+devbox run -- rtk just generate-internal
 ```
 
 ### Generated Package Locations
@@ -371,16 +568,16 @@ cd packaging/arch/prefer-pnpm && makepkg -si
 
 ```bash
 # Quick functionality tests
-just test
+devbox run -- rtk just test-internal
 
 # Ripgrep-specific tests (24 packages)
-just test-ripgrep
+devbox run -- rtk just test-ripgrep-internal
 
 # Comprehensive test suite
-just test-comprehensive
+devbox run -- rtk just test-comprehensive-internal
 
 # Individual package testing
-just test-internal
+devbox run -- rtk just test-internal-internal
 
 # Devbox reminder tests (per governance variant)
 cd tests/devbox-reminders/prefer && devbox shell   # Tests prefer-* wrappers
@@ -391,9 +588,9 @@ cd tests/devbox-reminders/eject  && devbox shell   # Tests eject-* wrappers
 
 ### Test Coverage
 
-- **207 individual governance packages tested** (115 existing + 92 devbox reminder packages)
-- **11 bundle packages tested**
-- **218 test scenarios total**
+- **289 individual governance packages tested** (115 existing + 92 devbox reminder + 54 RTK wrapper + 8 devbox-auto + 16 devbox-rtk-governance)
+- **19 bundle packages tested** (11 existing + 4 RTK bundle + 4 devbox-auto bundle)
+- **303 test scenarios total**
 - **Transient devbox environments for isolation**
 
 #### Devbox Reminder Test Structure
@@ -467,272 +664,165 @@ devbox add github:levonk/levonk-packages#python-ecosystem
 
 ```bash
 # Build packages
-nix build .#prefer-pnpm
-nix build .#command-governance
+devbox run -- rtk nix build .#prefer-pnpm
+devbox run -- rtk nix build .#command-governance
 
 # Run governed commands
-nix run .#prefer-pnpm -- --version
+devbox run -- rtk nix run .#prefer-pnpm -- --version
 ```
 
-## Available Packages
+## Package Classes
 
-### Node.js Governance (12 packages)
-- **npm → pnpm**: `prefer-pnpm`, `eject-npm`, `force-pnpm`, `block-npm`
-- **npm → yarn**: `prefer-yarn`, `eject-yarn`, `force-yarn`, `block-yarn`
-- **npm → bun**: `prefer-bun`, `eject-bun`, `force-bun`, `block-bun`
+The levonk-packages system organizes packages into distinct classes based on their purpose and governance approach. For detailed information about each class, including available packages and usage examples, see the [docs/](docs/) directory.
 
-### Python Governance (3 packages)
-- **pip → uv**: `prefer-uv`, `eject-pip`, `block-pip`
+### Traditional Governance Packages
+**Purpose**: Enforce tool preferences through soft guidance, strict replacement, or complete prohibition.
 
-### Search Tool Governance (24 packages)
+**Governance Types**:
+- **`prefer-*`** - Soft guidance with warnings and delegation
+- **`eject-*`** - Enforcement engine that removes disfavored tools
+- **`force-*`** - Strict replacement with wrapper
+- **`block-*`** - Complete prohibition with error-exiting wrapper
 
-#### ripgrep → Traditional Search Tools
-- **grep → ripgrep**: `prefer-grep`, `eject-grep`, `force-grep`, `block-grep`
-- **ag → ripgrep**: `prefer-ag`, `eject-ag`, `force-ag`, `block-ag`
-- **git grep → ripgrep**: `prefer-git-grep`, `eject-git-grep`, `force-git-grep`, `block-git-grep`
-- **ucg → ripgrep**: `prefer-ucg`, `eject-ucg`, `force-ucg`, `block-ucg`
-- **pt → ripgrep**: `prefer-pt`, `eject-pt`, `force-pt`, `block-pt`
-- **sift → ripgrep**: `prefer-sift`, `eject-sift`, `force-sift`, `block-sift`
+**Examples**: npm → pnpm, pip → uv, grep → ripgrep, sudo → sudo-rs
 
-#### Individual Package Details
-- **`prefer-grep`** - Soft guidance preferring ripgrep over traditional grep
-- **`prefer-ag`** - Soft guidance preferring ripgrep over the_silver_searcher
-- **`prefer-git-grep`** - Soft guidance preferring ripgrep over git grep
-- **`prefer-ucg`** - Soft guidance preferring ripgrep over Universal Code Grep
-- **`prefer-pt`** - Soft guidance preferring ripgrep over the_platinum_searcher
-- **`prefer-sift`** - Soft guidance preferring ripgrep over sift
+**Documentation**: See [docs/traditional-governance.md](docs/traditional-governance.md)
 
-#### Enforcement Packages
-- **`eject-*`** - Removes disfavored search tool if possible
-- **`force-*`** - Forces disfavored tool to use ripgrep (e.g., `force-grep` makes grep command run ripgrep)
-- **`block-*`** - Complete prohibition with error-exiting wrappers
+### RTK Token Optimization Wrappers
+**Purpose**: Transparently intercept AI agent commands and run them through RTK for token-optimized output.
 
-### Privilege Tool Governance (8 packages)
+**Key Features**:
+- Transparent optimization (no AI behavior changes required)
+- Graceful fallback when RTK is not installed
+- Designed specifically for AI agent environments
+- Token savings for common commands (ls, git, npm, etc.)
 
-#### sudo → Modern Privilege Tools
-- **sudo → sudo-rs**: `prefer-sudo`, `eject-sudo`, `force-sudo`, `block-sudo`
-- **sudo → doas**: `prefer-sudo-doas`, `eject-sudo-doas`, `force-sudo-doas`, `block-sudo-doas`
-- **pkexec → sudo**: `prefer-pkexec`, `eject-pkexec`, `force-pkexec`, `block-pkexec`
+**Bundle Packages**: `bundle-rtk-core`, `bundle-rtk-development`, `bundle-rtk-cloud`, `bundle-rtk-all`
 
-#### Individual Package Details
-- **`prefer-sudo`** - Soft guidance preferring sudo-rs over traditional sudo
-- **`prefer-sudo-doas`** - Soft guidance preferring doas over sudo for simplicity
-- **`prefer-pkexec`** - Soft guidance preferring sudo over pkexec for consistency
+**Documentation**: See [docs/rtk-wrappers.md](docs/rtk-wrappers.md)
 
-#### Why sudo-rs/doas?
-- **sudo-rs**: Rust implementation with memory safety and reduced attack surface
-- **doas**: Minimalist alternative from OpenBSD, simpler configuration
-- **Better security**: Reduced code complexity and modern security practices
+### Devbox Auto-Environment Management
+**Purpose**: Automatically ensure development tools are available via devbox by managing devbox.json and running commands through `devbox run --`.
 
-### Download Tool Governance (10 packages)
+**Key Features**:
+- Recursion prevention for devbox environments
+- Auto-discovery of devbox.json files
+- Auto-management of devbox.json packages
+- Graceful fallback when no devbox.json exists
 
-#### curl → Modern Download Tools
-- **curl → wget**: `prefer-curl`, `eject-curl`, `force-curl`, `block-curl`
-- **curl → httpie**: `prefer-curl-httpie`, `eject-curl-httpie`, `force-curl-httpie`, `block-curl-httpie`
-- **wget → aria2**: `prefer-wget`, `eject-wget`, `force-wget`, `block-wget`
-- **wget2 → curl**: `prefer-wget2`, `eject-wget2`, `force-wget2`, `block-wget2`
+**Bundle Packages**: `bundle-devbox-auto-nodejs`, `bundle-devbox-auto-python`, `bundle-devbox-auto-rust`, `bundle-devbox-auto-go`, `bundle-devbox-auto-all`
 
-#### Individual Package Details
-- **`prefer-curl`** - Soft guidance preferring wget over curl for download scripts
-- **`prefer-curl-httpie`** - Soft guidance preferring httpie for API debugging
-- **`prefer-wget`** - Soft guidance preferring aria2 for parallel downloads
-- **`prefer-wget2`** - Soft guidance preferring curl over wget2 for compatibility
+**Documentation**: See [docs/devbox-auto.md](docs/devbox-auto.md)
 
-#### Tool Comparison
-- **curl**: Versatile, supports many protocols, script-friendly
-- **wget**: Recursive downloads, robust for mirroring
-- **httpie**: User-friendly JSON/API debugging with syntax highlighting
-- **aria2**: Multi-connection downloads, supports various protocols
-- **wget2**: Modern wget rewrite with improved performance
+### Integrated Devbox-RTK-Governance Packages
+**Purpose**: Combine devbox environment management, RTK token optimization, and tool governance in a single package.
 
-### Find Tool Governance (8 packages)
+**Naming Convention**: `devbox-rtk-{ecosystem}-{preferred-tool}-{governance-type}`
 
-#### find → fd
-- **find → fd**: `prefer-find`, `eject-find`, `force-find`, `block-find`
-- **fd → find**: `prefer-fd`, `eject-fd`, `force-fd`, `block-fd`
+**Governance Types**: `prefer`, `force`, `block`, `native`
 
-#### Individual Package Details
-- **`prefer-find`** - Soft guidance preferring fd over traditional find
-- **`prefer-fd`** - Soft guidance preferring find over fd for complex expressions
+**Examples**: `devbox-rtk-nodejs-pnpm-force`, `devbox-rtk-python-uv-prefer`
 
-#### Why fd?
-- **Intuitive defaults**: Ignores hidden files and respects .gitignore
-- **Fast performance**: Rust-based with parallel execution
-- **Developer-friendly**: Colored output and sane defaults
-- **Simple syntax**: Regular expressions instead of complex find expressions
+**Benefits**:
+- No conflicts between separate wrapper systems
+- Clear governance intent in package name
+- Complete solution (environment + preference + optimization)
+- Predictable behavior for AI agents
 
-### Locate Tool Governance (8 packages)
+**Documentation**: See [docs/integrated-packages.md](docs/integrated-packages.md)
 
-#### locate → plocate
-- **locate → plocate**: `prefer-locate`, `eject-locate`, `force-locate`, `block-locate`
-- **plocate → locate**: `prefer-plocate`, `eject-plocate`, `force-plocate`, `block-plocate`
+### Devbox Reminder Governance
+**Purpose**: Intercept development tool invocations and remind/warn/enforce the use of `devbox run <tool>` to ensure correct toolchain configuration.
 
-#### Individual Package Details
-- **`prefer-locate`** - Soft guidance preferring plocate over traditional locate
-- **`prefer-plocate`** - Soft guidance preferring locate over plocate for compatibility
+**Governance Types**:
+- **`prefer-*`**: Warns that `devbox run <tool>` is preferred
+- **`force-*`**: Automatically runs `devbox run <tool>` when devbox.json is found
+- **`eject-*`**: Attempts `devbox run <tool>` first, falls back to direct execution
+- **`block-*`**: Blocks direct tool execution entirely
 
-#### Why plocate?
-- **Better performance**: Uses posting lists for faster searches
-- **Modern implementation**: Improved indexing and search algorithms
-- **Compatibility**: Drop-in replacement for traditional locate/updatedb
+**Covered Tools**: Rust (cargo, rustc), Node.js/TypeScript (tsc, node), Python (python, pip, uv), Java (java, javac), Go (go, swift), Build tools (make, cmake, ninja, just), C/C++ (gcc, clang), .NET/Ruby (dotnet, ruby, gem)
 
-### Text Processing Tool Governance (8 packages)
+**Documentation**: See [docs/devbox-reminders.md](docs/devbox-reminders.md)
 
-#### sed → sd
-- **sed → sd**: `prefer-sed`, `eject-sed`, `force-sed`, `block-sed`
-- **sd → sed**: `prefer-sd`, `eject-sd`, `force-sd`, `block-sd`
+### Bundle Packages
+**Purpose**: Combine multiple related packages into a single installation for convenience.
 
-#### Individual Package Details
-- **`prefer-sed`** - Soft guidance preferring sd over sed for simple replacements
-- **`prefer-sd`** - Soft guidance preferring sed over sd for complex scripts
+**Types**:
+- **Ecosystem bundles**: All packages for a specific ecosystem (e.g., `nodejs-ecosystem`, `python-ecosystem`)
+- **Migration bundles**: Complete tool migration packages (e.g., `migrate-to-pnpm-bundle`)
+- **Tool category bundles**: All packages for a tool category (e.g., `privilege-tools`, `download-tools`)
+- **Class bundles**: All packages in a class (e.g., `bundle-rtk-all`, `bundle-devbox-auto-all`)
 
-#### Why sd?
-- **Intuitive syntax**: Uses regular expressions more familiar to developers
-- **Safer by default**: Doesn't modify files in-place unless explicitly requested
-- **Better error handling**: Clear error messages and safer operations
-- **Performance**: Fast Rust implementation for common use cases
+**Documentation**: See [docs/bundle-packages.md](docs/bundle-packages.md)
 
-### Devbox Reminder Governance (92 packages)
+## Adding New RTK Wrappers
 
-#### Development Tool Reminders → devbox run
+Use the automated generator:
+```bash
+devbox run -- rtk ./scripts/generate-rtk-suite.sh suite
+```
 
-AI agents often attempt to run development tools directly on the host operating system, bypassing the project's `devbox` environment. These packages intercept common development tool invocations and remind/warn/enforce the use of `devbox run <tool>` to ensure correct toolchain configuration.
+Or add manually:
+1. Create wrapper script in `wrappers/rtk-tools/`
+2. Create Nix derivation in `nix/rtk-wrap-<cmd>.nix`
+3. Update `flake.nix` imports and packages sections
+4. Add to appropriate bundle package
+5. Update documentation
 
-**Governance types:**
-- **`prefer-*`**: Warns that `devbox run <tool>` is preferred, but still executes the tool directly (soft guidance)
-- **`force-*`**: Automatically runs `devbox run <tool>` when a `devbox.json` is found (strict enforcement)
-- **`eject-*`**: Attempts `devbox run <tool>` first, falls back to direct execution (migration aid)
-- **`block-*`**: Blocks direct tool execution entirely, requires `devbox run <tool>` (hard enforcement)
+## RTK Command Sync Workflow
 
-#### Rust Tools
-- **cargo**: `prefer-cargo`, `force-cargo`, `block-cargo`, `eject-cargo`
-- **rustc**: `prefer-rustc`, `force-rustc`, `block-rustc`, `eject-rustc`
+To keep RTK wrapper packages synchronized with the official RTK README, use the automated workflow:
 
-#### Node.js / TypeScript Tools
-- **tsc**: `prefer-tsc`, `force-tsc`, `block-tsc`, `eject-tsc`
-- **node**: `prefer-node`, `force-node`, `block-node`, `eject-node`
+```bash
+# With Archon CLI
+bun run cli workflow run sync-rtk-commands
 
-#### Python Tools
-- **python3**: `prefer-python3`, `force-python3`, `block-python3`, `eject-python3`
-- **python**: `prefer-python`, `force-python`, `block-python`, `eject-python`
-- **pip**: `prefer-pip`, `force-pip`, `block-pip`, `eject-pip`
-- **pip3**: `prefer-pip3`, `force-pip3`, `block-pip3`, `eject-pip3`
-- **uv**: `prefer-uv`, `force-uv`, `block-uv`, `eject-uv`
+# Or manually run the workflow steps
+# The workflow is located in:
+# - .agents/workflows/sync-rtk-commands.yaml (for Archon agents)
+# - .devin/workflows/sync-rtk-commands.yaml (for Devin agents)
+```
 
-#### Java Tools
-- **java**: `prefer-java`, `force-java`, `block-java`, `eject-java`
-- **javac**: `prefer-javac`, `force-javac`, `block-javac`, `eject-javac`
+**What the workflow does**:
+1. **Fetches** the latest RTK README from GitHub
+2. **Extracts** all RTK commands from the README
+3. **Compares** with existing wrapper packages
+4. **Generates** missing wrapper scripts automatically
+5. **Creates** Nix derivations for new wrappers
+6. **Updates** flake.nix with new packages
+7. **Updates** bundle packages (core, development, cloud, all)
+8. **Updates** the generator script with new commands
+9. **Generates** devbox-rtk integrated packages for development tools
+10. **Updates** documentation with new package counts
+11. **Commits** all changes with a descriptive message
 
-#### Go / Swift
-- **go**: `prefer-go`, `force-go`, `block-go`, `eject-go`
-- **swift**: `prefer-swift`, `force-swift`, `block-swift`, `eject-swift`
+**Workflow location**: `.agents/workflows/sync-rtk-commands.yaml` (also in `.devin/workflows/`)
 
-#### Build Tools
-- **make**: `prefer-make`, `force-make`, `block-make`, `eject-make`
-- **cmake**: `prefer-cmake`, `force-cmake`, `block-cmake`, `eject-cmake`
-- **ninja**: `prefer-ninja`, `force-ninja`, `block-ninja`, `eject-ninja`
-- **just**: `prefer-just`, `force-just`, `block-just`, `eject-just`
+**Benefits**:
+- **Automated**: No manual tracking of RTK command additions
+- **Comprehensive**: Covers all RTK commands from the official README
+- **Integrated**: Automatically creates devbox-rtk packages for dev tools
+- **Safe**: Only adds missing commands, doesn't modify existing ones
+- **Documented**: Updates documentation automatically
 
-#### C/C++ Tools
-- **gcc**: `prefer-gcc`, `force-gcc`, `block-gcc`, `eject-gcc`
-- **g++**: `prefer-gpp`, `force-gpp`, `block-gpp`, `eject-gpp` (Nix attribute names; binaries still named `g++`)
-- **clang**: `prefer-clang`, `force-clang`, `block-clang`, `eject-clang`
+**Manual sync** (if workflow unavailable):
+```bash
+# 1. Fetch RTK README
+curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/develop/README.md -o /tmp/rtk-readme.md
 
-#### .NET / Ruby
-- **dotnet**: `prefer-dotnet`, `force-dotnet`, `block-dotnet`, `eject-dotnet`
-- **ruby**: `prefer-ruby`, `force-ruby`, `block-ruby`, `eject-ruby`
-- **gem**: `prefer-gem`, `force-gem`, `block-gem`, `eject-gem`
+# 2. Extract commands
+grep "rtk " /tmp/rtk-readme.md | sed 's/.*rtk //' | sed 's/ .*//' | sort -u > /tmp/rtk-commands.txt
 
-#### Why Devbox Reminders?
-- **Consistent toolchains**: Ensures agents use the exact Rust, Python, Node.js, etc. versions defined in `devbox.json`
-- **Reproducible builds**: Prevents "works on my machine" issues caused by host OS tool versions
-- **AI agent discipline**: Trains automated agents to check for `devbox.json` before invoking tools
-- **Zero-config enforcement**: `force-*` packages automatically route to `devbox run` without agent intervention
+# 3. Compare with existing
+ls wrappers/rtk-tools/*.rtk-wrap.sh | xargs -I {} basename {} .rtk-wrap.sh | sort > /tmp/existing-commands.txt
+comm -13 /tmp/existing-commands.txt /tmp/rtk-commands.txt > /tmp/missing-commands.txt
 
-### Bundle Packages (11 packages)
-- **`nodejs-ecosystem`** - All Node.js package manager governance
-- **`python-ecosystem`** - Python package manager governance
-- **`dev-tools`** - Development tool governance
-- **`migrate-to-pnpm-bundle`** - Complete npm→pnpm migration
-- **`migrate-to-uv-bundle`** - Complete pip→uv migration
-- **`privilege-tools`** - All privilege escalation tool governance
-- **`download-tools`** - All download tool governance
-- **`find-tools`** - All file finding tool governance
-- **`locate-tools`** - All file locating tool governance
-- **`text-tools`** - All text processing tool governance
-- **`command-governance`** - All 207 governance packages (115 existing + 92 devbox reminder packages)
+# 4. Generate missing wrappers (see existing pattern)
+```
 
 ## Search Tool Governance: ripgrep
 
-### Overview
-
-The `prefer-ripgrep` package family provides governance for search tools, encouraging the use of `ripgrep (rg)` over alternative search tools like `grep`, `ag` (the_silver_searcher), `git grep`, `ucg`, `pt` (the_platinum_searcher), and `sift`.
-
-### Why ripgrep?
-
-**ripgrep** is a modern, high-performance search tool that combines the best features of traditional search tools with significant performance improvements:
-
-- **Blazing fast**: Often 10-100x faster than traditional grep
-- **Intelligent defaults**: Automatically respects `.gitignore` and skips binary files
-- **Modern regex**: Uses Rust's regex engine with better Unicode support
-- **Parallel execution**: Utilizes multiple CPU cores automatically
-- **Built for developers**: Designed specifically for code search workflows
-
-### Replaced Tools
-
-The `prefer-ripgrep` package provides soft guidance for these alternatives:
-
-- **`grep`** - Traditional Unix search tool
-- **`ag`** - The Silver Searcher
-- **`git grep`** - Git's built-in search
-- **`ucg`** - Universal Code Grep
-- **`pt`** - The Platinum Searcher
-- **`sift`** - Fast text search tool
-
-### Usage Examples
-
-```bash
-# Basic search (replaces grep -r)
-rg "pattern" .
-
-# Search with file type filtering
-rg "function" --type js
-
-# Search only in specific files
-rg "TODO" --glob "*.md"
-
-# Context lines (replaces grep -C)
-rg "error" --context 3
-
-# Case-insensitive search
-rg "error" --ignore-case
-
-# Regex search with word boundaries
-rg "\berror\b"
-```
-
-### Performance Comparison
-
-Typical performance improvements over traditional tools:
-- **vs grep**: 10-100x faster on large codebases
-- **vs ag**: Similar performance but better memory usage
-- **vs git grep**: Faster and more flexible
-- **vs pt/sift**: Better regex engine and Unicode support
-
-### Package Details
-
-- **Package family**: `prefer-ripgrep` ecosystem (24 packages)
-- **Governance types**: Soft guidance, enforcement, strict replacement, complete prohibition
-- **Dependencies**: `ripgrep` (rg) must be installed for force/block variants
-- **Bundle inclusion**: Available in `dev-tools` and `command-governance`
-- **Coverage**: 6 traditional search tools with 4 governance variants each
-
-### Reference
-
-For comprehensive documentation, examples, and installation instructions, visit the official ripgrep website:
-**https://burntsushi.net/ripgrep/**
-
-The site provides detailed usage guides, performance benchmarks, and configuration examples for integrating ripgrep into your development workflow.
+For detailed information about ripgrep governance packages, including usage examples and performance comparisons, see [docs/ripgrep-governance.md](docs/ripgrep-governance.md).
 
 ## Common Tasks
 
@@ -743,32 +833,32 @@ The site provides detailed usage guides, performance benchmarks, and configurati
 3. Update `flake.nix` packages section
 4. Add to packaging generators
 5. Update bundle packages
-6. Test with `just test`
+6. Test with `devbox run -- rtk just test-internal`
 
 ### Debug Package Issues
 
 ```bash
 # Test individual package
-nix run .#prefer-pnpm -- --version
+devbox run -- rtk nix run .#prefer-pnpm -- --version
 
 # Check wrapper script
 cat wrappers/npm.prefer-pnpm.sh
 
 # Verify Nix derivation
-nix build .#prefer-pnpm --print-build-logs
+devbox run -- rtk nix build .#prefer-pnpm --print-build-logs
 ```
 
 ### Release Process
 
 ```bash
 # Build and test everything
-just build && just test
+devbox run -- rtk just build-internal && devbox run -- rtk just test-internal
 
 # Generate all packaging
-just generate
+devbox run -- rtk just generate-internal
 
 # Create release artifacts
-just release
+devbox run -- rtk just release-internal
 ```
 
 ## Key Files to Understand
@@ -791,13 +881,13 @@ just release
 
 ```bash
 # Check environment health
-just doctor
+devbox run -- rtk just doctor-internal
 
 # See available commands
-just --list
+devbox run -- rtk just --list
 
 # Test specific package
-nix run .#package-name -- --help
+devbox run -- rtk nix run .#package-name -- --help
 ```
 
 ## Development Standards

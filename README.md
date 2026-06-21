@@ -20,9 +20,76 @@ This repository provides a unified system for AI agents to stay within preferred
 
 ## 🚀 Quick Start
 
+### RTK Token Optimization Wrappers
+
+**Install individual RTK wrapper**:
+```bash
+# Via Nix
+nix profile install .#rtk-wrap-ls
+
+# Via Devbox
+devbox add github:levonk/levonk-packages#rtk-wrap-ls
+
+# Install complete RTK suite
+nix profile install .#bundle-rtk-all
+devbox add github:levonk/levonk-packages#bundle-rtk-all
+```
+
+**Usage**:
+```bash
+# Commands automatically run through RTK for token optimization
+ls -la          # → rtk ls -la (compact output)
+git status      # → rtk git status (compact output)
+npm install     # → rtk npm install (filtered output)
+```
+
+### Devbox Auto-Environment Management
+
+**Install devbox-auto wrapper**:
+```bash
+# Via Nix
+nix profile install .#devbox-auto-npm
+
+# Via Devbox
+devbox add github:levonk/levonk-packages#devbox-auto-npm
+
+# Install complete devbox-auto suite
+nix profile install .#bundle-devbox-auto-all
+devbox add github:levonk/levonk-packages#bundle-devbox-auto-all
+```
+
+**Usage**:
+```bash
+# Commands automatically ensure tools via devbox
+npm install     # → Adds npm to devbox.json → devbox run -- npm install
+python script.py  # → Adds python to devbox.json → devbox run -- python script.py
+```
+
+### Integrated Devbox-RTK-Governance Packages
+
+**Install integrated package (environment + optimization + governance)**:
+```bash
+# Via Nix
+nix profile install .#devbox-rtk-nodejs-pnpm-force
+
+# Via Devbox
+devbox add github:levonk/levonk-packages#devbox-rtk-nodejs-pnpm-force
+```
+
+**Usage**:
+```bash
+# npm → pnpm (force) + devbox environment + RTK optimization
+npm install
+# → ✅ Using pnpm instead of npm (forced by policy)...
+# → 📦 Adding pnpm to devbox environment...
+# → devbox run -- rtk pnpm install
+```
+
+### Traditional Governance Packages
+
 **Note**: Nix/Devbox packages work immediately. Other package managers require running `just generate` first.
 
-### With Devbox (Recommended)
+##### With Devbox (Recommended)
 
 ```bash
 # Add npm governance
@@ -35,7 +102,7 @@ devbox add github:levonk/levonk-packages#command-governance
 npm install  # Now governed by pnpm
 ```
 
-### With Nix
+#### With Nix
 
 ```bash
 # Build locally from source
@@ -44,6 +111,10 @@ nix build .#command-governance
 
 # Run governed commands
 nix run .#prefer-pnpm -- --version
+
+# Install to profile
+nix profile install .#prefer-pnpm
+nix profile install .#command-governance
 ```
 
 ### Other Package Managers
@@ -60,6 +131,36 @@ apk add command-prefer-pnpm
 ```
 
 ## 📦 Available Packages
+
+### RTK Token Optimization Wrappers (54 packages)
+- **Core Commands**: `rtk-wrap-ls`, `rtk-wrap-tree`, `rtk-wrap-cat`, `rtk-wrap-find`, `rtk-wrap-grep`, `rtk-wrap-diff`, `rtk-wrap-wc`, `rtk-wrap-curl`, `rtk-wrap-json`, `rtk-wrap-env`, `rtk-wrap-deps`, `rtk-wrap-test`, `rtk-wrap-err`
+- **Development Tools**: `rtk-wrap-git`, `rtk-wrap-npm`, `rtk-wrap-npx`, `rtk-wrap-pnpm`, `rtk-wrap-tsc`, `rtk-wrap-jest`, `rtk-wrap-vitest`, `rtk-wrap-pytest`, `rtk-wrap-mypy`, `rtk-wrap-ruff`, `rtk-wrap-prettier`, `rtk-wrap-eslint`, `rtk-wrap-prisma`, `rtk-wrap-next`, `rtk-wrap-lint`, `rtk-wrap-format`, `rtk-wrap-playwright`, `rtk-wrap-cargo`, `rtk-wrap-pip`, `rtk-wrap-go`, `rtk-wrap-golangci-lint`, `rtk-wrap-rubocop`, `rtk-wrap-rake`, `rtk-wrap-rspec`, `rtk-wrap-gradlew`
+- **Cloud & DevOps**: `rtk-wrap-gh`, `rtk-wrap-glab`, `rtk-wrap-docker`, `rtk-wrap-kubectl`, `rtk-wrap-oc`, `rtk-wrap-aws`, `rtk-wrap-psql`, `rtk-wrap-dotnet`, `rtk-wrap-wget`, `rtk-wrap-gt`
+
+**Bundle Packages**:
+- `bundle-rtk-core` - Core command wrappers
+- `bundle-rtk-development` - Development tool wrappers
+- `bundle-rtk-cloud` - Cloud tool wrappers
+- `bundle-rtk-all` - All 54 RTK wrapper packages
+
+### Devbox Auto-Environment Management (8 packages)
+- **Node.js**: `devbox-auto-npm`, `devbox-auto-pnpm`, `devbox-auto-yarn`
+- **Python**: `devbox-auto-python`, `devbox-auto-pip`
+- **Rust**: `devbox-auto-cargo`, `devbox-auto-rustc`
+- **Go**: `devbox-auto-go`
+
+**Bundle Packages**:
+- `bundle-devbox-auto-nodejs` - Node.js package managers
+- `bundle-devbox-auto-python` - Python tools
+- `bundle-devbox-auto-rust` - Rust toolchain
+- `bundle-devbox-auto-go` - Go tools
+- `bundle-devbox-auto-all` - All devbox-auto wrappers
+
+### Integrated Devbox-RTK-Governance Packages (16 packages)
+- **Node.js with pnpm**: `devbox-rtk-nodejs-pnpm-prefer`, `devbox-rtk-nodejs-pnpm-force`, `devbox-rtk-nodejs-pnpm-block`, `devbox-rtk-nodejs-pnpm-native`
+- **Node.js with yarn**: `devbox-rtk-nodejs-yarn-prefer`, `devbox-rtk-nodejs-yarn-force`, `devbox-rtk-nodejs-yarn-block`, `devbox-rtk-nodejs-yarn-native`
+- **Node.js with bun**: `devbox-rtk-nodejs-bun-prefer`, `devbox-rtk-nodejs-bun-force`, `devbox-rtk-nodejs-bun-block`, `devbox-rtk-nodejs-bun-native`
+- **Python with uv**: `devbox-rtk-python-uv-prefer`, `devbox-rtk-python-uv-force`, `devbox-rtk-python-uv-block`, `devbox-rtk-python-uv-native`
 
 ### npm Governance (12 packages)
 - **npm → pnpm**: `prefer-pnpm`, `eject-npm`, `force-pnpm`, `block-npm`
@@ -105,11 +206,34 @@ apk add command-prefer-pnpm
 
 **Note**: `force-uv` is an individual package (per specs), while `migrate-to-uv-bundle` is a convenience bundle that includes `force-uv` + `eject-pip` + `prefer-uv` for complete migration scenarios.
 
-**Total: 49 individual governance packages + 6 bundle packages = 55 packages**
+**Total: 289 individual governance packages + 19 bundle packages = 308 packages**
 
 📖 **See [docs/PACKAGE_LIST.md](docs/PACKAGE_LIST.md) for the complete detailed list.**
 
 ## 🔧 New Features
+
+### 🔄 Automated RTK Command Sync
+
+Keep RTK wrapper packages synchronized with the official RTK README automatically:
+
+```bash
+# Run the sync workflow (requires Archon CLI)
+bun run cli workflow run sync-rtk-commands
+```
+
+**What it does**:
+1. Fetches the latest RTK README from GitHub
+2. Extracts all RTK commands from the README
+3. Compares with existing wrapper packages
+4. Generates missing wrapper scripts automatically
+5. Creates Nix derivations for new wrappers
+6. Updates flake.nix and bundle packages
+7. Updates generator scripts
+8. Generates devbox-rtk integrated packages for dev tools
+9. Updates documentation with new package counts
+10. Commits all changes with a descriptive message
+
+**Workflow location**: `.agents/workflows/sync-rtk-commands.yaml` (also in `.devin/workflows/`)
 
 ### 🎯 Dynamic Package Detection
 All `prefer-*` wrappers now intelligently detect available alternatives on your system:
@@ -188,19 +312,27 @@ just test-internal
 ```
 
 ### Test Coverage
-- **13 individual governance packages** tested
-- **4 bundle packages** tested
-- **17 test scenarios** total
+- **289 individual governance packages tested** (115 existing + 92 devbox reminder + 54 RTK wrapper + 8 devbox-auto + 16 devbox-rtk-governance)
+- **19 bundle packages tested** (11 existing + 4 RTK bundle + 4 devbox-auto bundle)
+- **303 test scenarios total**
 - **Transient devbox environments** for isolation
-- **Behavioral validation** for all four governance types
+- **Behavioral validation** for all governance types
 
 ### Test Examples
 ```bash
-# Test prefer-pnpm behavior
+# Test traditional governance packages
 nix run .#prefer-pnpm -- --version
-
-# Test block-npm behavior
 nix run .#block-npm -- --version  # Exits with error
+
+# Test RTK wrapper packages
+nix run .#rtk-wrap-ls -- --version
+nix run .#rtk-wrap-git -- --version
+
+# Test devbox-auto packages
+nix run .#devbox-auto-npm -- --version
+
+# Test integrated devbox-rtk packages
+nix run .#devbox-rtk-nodejs-pnpm-force -- --version
 
 # Test bundle packages
 nix build .#nodejs-ecosystem
@@ -208,24 +340,69 @@ nix build .#python-ecosystem
 nix build .#dev-tools
 nix build .#migrate-to-pnpm
 nix build .#migrate-to-uv
+nix build .#bundle-rtk-all
+nix build .#bundle-devbox-auto-all
 ```
 
 ## 🔧 Installation
 
 ### Package Managers
 
-**Note**: Packages must be generated first with `just generate` from this repository.
+**Note**: Traditional governance packages must be generated first with `just generate` from this repository. RTK, devbox-auto, and integrated packages work immediately via Nix/Devbox.
 
 | Manager | Command |
 |---------|---------|
 | **Devbox** | `devbox add github:levonk/levonk-packages#prefer-pnpm` |
-| **Nix** | `nix build .#prefer-pnpm` |
+| **Nix** | `nix profile install .#prefer-pnpm` |
+| **Nix (build)** | `nix build .#prefer-pnpm` |
 | **Alpine** | `apk add command-prefer-pnpm` *(after generation)* |
 | **Debian/Ubuntu** | `sudo apt install command-prefer-pnpm` *(after generation)* |
 | **Fedora** | `sudo dnf install command-prefer-pnpm` *(after generation)* |
 | **Arch** | `yay -S command-prefer-pnpm` *(after generation)* |
 | **Homebrew** | `brew install command-prefer-pnpm` *(after generation)* |
 | **mise** | `mise use prefer-pnpm` *(after generation)* |
+
+### Installation Examples
+
+#### RTK Token Optimization Wrappers
+```bash
+# Install individual RTK wrapper
+nix profile install .#rtk-wrap-ls
+devbox add github:levonk/levonk-packages#rtk-wrap-ls
+
+# Install complete RTK suite
+nix profile install .#bundle-rtk-all
+devbox add github:levonk/levonk-packages#bundle-rtk-all
+```
+
+#### Devbox Auto-Environment Management
+```bash
+# Install individual devbox-auto wrapper
+nix profile install .#devbox-auto-npm
+devbox add github:levonk/levonk-packages#devbox-auto-npm
+
+# Install complete devbox-auto suite
+nix profile install .#bundle-devbox-auto-all
+devbox add github:levonk/levonk-packages#bundle-devbox-auto-all
+```
+
+#### Integrated Devbox-RTK-Governance Packages
+```bash
+# Install integrated package (environment + optimization + governance)
+nix profile install .#devbox-rtk-nodejs-pnpm-force
+devbox add github:levonk/levonk-packages#devbox-rtk-nodejs-pnpm-force
+```
+
+#### Traditional Governance Packages
+```bash
+# Install traditional governance package
+nix profile install .#prefer-pnpm
+devbox add github:levonk/levonk-packages#prefer-pnpm
+
+# Install comprehensive governance bundle
+nix profile install .#command-governance
+devbox add github:levonk/levonk-packages#command-governance
+```
 
 ### Generate All Packages
 
