@@ -1,0 +1,242 @@
+name: sync-rtk-commands
+description: Sync RTK wrapper packages with the official RTK README
+version: 1.0.0
+
+nodes:
+  - id: fetch-rtk-readme
+    description: Fetch the latest RTK README from GitHub
+    tool: shell
+    config:
+      command: curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/develop/README.md -o /tmp/rtk-readme.md
+
+  - id: extract-commands
+    description: Extract RTK commands from README
+    tool: shell
+    config:
+      command: |
+        # Extract command sections from README
+        grep -E "^\s+rtk [a-z-]+" /tmp/rtk-readme.md | sed 's/.*rtk //' | sed 's/ .*//' | sort -u > /tmp/rtk-commands.txt
+        echo "Extracted commands:"
+        cat /tmp/rtk-commands.txt
+
+  - id: compare-existing
+    description: Compare with existing RTK wrappers
+    tool: shell
+    config:
+      command: |
+        # List existing RTK wrappers
+        ls wrappers/rtk-tools/*.rtk-wrap.sh 2>/dev/null | xargs -I {} basename {} .rtk-wrap.sh | sort > /tmp/existing-commands.txt
+        # Find missing commands
+        comm -13 /tmp/existing-commands.txt /tmp/rtk-commands.txt > /tmp/missing-commands.txt
+        echo "Missing commands:"
+        cat /tmp/missing-commands.txt
+        # Count missing
+        missing_count=$(wc -l < /tmp/missing-commands.txt)
+        echo "Total missing: $missing_count"
+
+  - id: generate-wrappers
+    description: Generate missing RTK wrapper scripts
+    tool: shell
+    config:
+      command: |
+        # Generate wrapper scripts for missing commands
+        while read cmd; do
+          if [ -n "$cmd" ]; then
+            echo "Generating wrapper for: $cmd"
+            cat > "wrappers/rtk-tools/$cmd.rtk-wrap.sh" << EOF
+#!/usr/bin/env sh
+# RTK wrapper for $cmd command
+# Transparently runs $cmd through RTK for compact output
+
+SCRIPT_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "\$SCRIPT_DIR/utils/rtk-wrapper.sh" ]; then
+    . "\$SCRIPT_DIR/utils/rtk-wrapper.sh"
+fi
+
+rtk_wrap $cmd $cmd "compact output"
+EOF
+            chmod +x "wrappers/rtk-tools/$cmd.rtk-wrap.sh"
+          fi
+        done < /tmp/missing-commands.txt
+
+  - id: generate-nix
+    description: Generate Nix derivations for new wrappers
+    tool: shell
+    config:
+      command: |
+        # Generate Nix derivations for missing commands
+        while read cmd; do
+          if [ -n "$cmd" ]; then
+            echo "Generating Nix derivation for: $cmd"
+            cat > "nix/rtk-wrap-$cmd.nix" << EOF
+{ pkgs }:
+
+pkgs.writeShellScriptBin "$cmd" ''
+  #!/usr/bin/env sh
+  \${builtins.readFile ../wrappers/rtk-tools/$cmd.rtk-wrap.sh}
+''
+EOF
+          fi
+        done < /tmp/missing-commands.txt
+
+  - id: update-flake
+    description: Update flake.nix with new packages
+    tool: shell
+    config:
+      command: |
+        # Add new packages to flake.nix
+        while read cmd; do
+          if [ -n "$cmd" ]; then
+            # Check if already in flake.nix
+            if ! grep -q "rtk-wrap-$cmd" flake.nix; then
+              echo "Adding $cmd to flake.nix"
+              # Add to imports section (find last rtk-wrap import)
+              last_import=$(grep -n "rtk-wrap.*= import" flake.nix | tail -1 | cut -d: -f1)
+              sed -i "${last_import}a\\        rtk-wrap-$cmd = import ./nix/rtk-wrap-$cmd.nix { inherit pkgs; };" flake.nix
+              # Add to packages section (find last rtk-wrap inherit)
+              last_inherit=$(grep -n "inherit rtk-wrap-" flake.nix | tail -1 | cut -d: -f1)
+              sed -i "${last_inherit}a\\          inherit rtk-wrap-$cmd;" flake.nix
+            fi
+          fi
+        done < /tmp/missing-commands.txt
+
+  - id: update-bundles
+    description: Update bundle packages with new commands
+    tool: shell
+    config:
+      command: |
+        # Update bundle-rtk-all with new commands
+        while read cmd; do
+          if [ -n "$cmd" ]; then
+            # Add to bundle-rtk-all imports
+            if ! grep -q "rtk-wrap-$cmd" nix/bundle-rtk-all.nix; then
+              last_import=$(grep -n "rtk-wrap.*= import" nix/bundle-rtk-all.nix | tail -1 | cut -d: -f1)
+              sed -i "${last_import}a\\  rtk-wrap-$cmd = import ./rtk-wrap-$cmd.nix { inherit pkgs; };" nix/bundle-rtk-all.nix
+              last_path=$(grep -n "rtk-wrap-" nix/bundle-rtk-all.nix | tail -1 | cut -d: -f1)
+              sed -i "${last_path}a\\    rtk-wrap-$cmd" nix/bundle-rtk-all.nix
+            fi
+          fi
+        done < /tmp/missing-commands.txt
+
+  - id: update-generator
+    description: Update generate-rtk-suite.sh with new commands
+    tool: shell
+    config:
+      command: |
+        # Update the generator script with new commands
+        while read cmd; do
+          if [ -n "$cmd" ]; then
+            if ! grep -q "\"$cmd:$cmd" scripts/generate-rtk-suite.sh; then
+              echo "Adding $cmd to generator script"
+              # Find last RTK_COMMANDS entry
+              last_entry=$(grep -n "\".*:.*:.*\"" scripts/generate-rtk-suite.sh | tail -1 | cut -d: -f1)
+              sed -i "${last_entry}a\\    \"$cmd:$cmd:compact output\"" scripts/generate-rtk-suite.sh
+            fi
+          fi
+        done < /tmp/missing-commands.txt
+
+  - id: generate-devbox-rtk
+    description: Generate devbox-rtk integrated packages for new commands
+    tool: shell
+    config:
+      command: |
+        # For development tools, generate devbox-rtk integrated packages
+        dev_tools=("npm" "pnpm" "yarn" "bun" "pip" "uv" "cargo" "go" "python" "tsc" "jest" "vitest" "pytest" "mypy" "ruff" "prettier" "eslint" "prisma" "next" "lint" "format" "playwright" "rubocop" "rake" "rspec" "gradlew")
+        
+        while read cmd; do
+          if [ -n "$cmd" ]; then
+            # Check if it's a dev tool
+            for dev_tool in "${dev_tools[@]}"; do
+              if [[ "$cmd" == "$dev_tool" ]]; then
+                echo "Generating devbox-rtk package for: $cmd"
+                # Create integrated wrapper
+                cat > "wrappers/devbox-rtk-tools/$cmd-native.sh" << EOF
+#!/usr/bin/env sh
+# Integrated devbox + RTK wrapper for $cmd (native, no governance)
+# Combines: environment management (devbox) + token optimization (RTK)
+
+SCRIPT_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "\$SCRIPT_DIR/utils/devbox-manager.sh" ]; then
+    . "\$SCRIPT_DIR/utils/devbox-manager.sh"
+fi
+if [ -f "\$SCRIPT_DIR/utils/rtk-wrapper.sh" ]; then
+    . "\$SCRIPT_DIR/utils/rtk-wrapper.sh"
+fi
+
+# No governance - use tool as-is
+devbox_wrap $cmd "\$@"
+EOF
+                chmod +x "wrappers/devbox-rtk-tools/$cmd-native.sh"
+                
+                # Create Nix derivation
+                cat > "nix/devbox-rtk-$cmd-native.nix" << EOF
+{ pkgs }:
+
+let
+  ${cmd}-wrapper = pkgs.writeShellScriptBin "${cmd}" ''
+    #!/usr/bin/env sh
+    \${builtins.readFile ../wrappers/devbox-rtk-tools/${cmd}-native.sh}
+  '';
+in
+pkgs.symlinkJoin {
+  name = "devbox-rtk-${cmd}-native";
+  paths = [
+    ${cmd}-wrapper
+  ];
+}
+EOF
+                break
+              fi
+            done
+          fi
+        done < /tmp/missing-commands.txt
+
+  - id: update-documentation
+    description: Update AGENTS.md with new package counts
+    tool: shell
+    config:
+      command: |
+        # Count total RTK wrappers
+        total=$(ls wrappers/rtk-tools/*.rtk-wrap.sh 2>/dev/null | wc -l)
+        # Update AGENTS.md
+        sed -i "s/rtk-tools.*([0-9]* files)/rtk-tools/          ($total files) - RTK token optimization wrappers (ls, tree, git, npm, pnpm, tsc, jest, etc.)/" AGENTS.md
+        sed -i "s/\*\*[0-9]* wrapper scripts\*\*/\*\*$total wrapper scripts\*\*/" AGENTS.md
+        sed -i "s/\*\*[0-9]* Nix derivations\*\*/\*\*$total Nix derivations\*\*/" AGENTS.md
+        sed -i "s/All [0-9]* RTK wrapper packages/All $total RTK wrapper packages/" AGENTS.md
+        echo "Updated documentation: $total RTK wrappers"
+
+  - id: commit-changes
+    description: Commit the new RTK wrapper packages
+    tool: shell
+    config:
+      command: |
+        git add wrappers/rtk-tools/*.rtk-wrap.sh nix/rtk-wrap-*.nix flake.nix nix/bundle-rtk-*.nix scripts/generate-rtk-suite.sh AGENTS.md wrappers/devbox-rtk-tools/*.sh nix/devbox-rtk-*.nix
+        git commit -m "sync: add new RTK wrapper packages from official README
+
+Synced with https://github.com/rtk-ai/rtk/blob/develop/README.md
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>"
+
+edges:
+  - from: fetch-rtk-readme
+    to: extract-commands
+  - from: extract-commands
+    to: compare-existing
+  - from: compare-existing
+    to: generate-wrappers
+  - from: generate-wrappers
+    to: generate-nix
+  - from: generate-nix
+    to: update-flake
+  - from: update-flake
+    to: update-bundles
+  - from: update-bundles
+    to: update-generator
+  - from: update-generator
+    to: generate-devbox-rtk
+  - from: generate-devbox-rtk
+    to: update-documentation
+  - from: update-documentation
+    to: commit-changes
