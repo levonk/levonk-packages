@@ -2,6 +2,15 @@
 # Get the tool name from argv[0]
 TOOL=$(basename "$0")
 
+# If REAL_TOOL is provided (e.g. by Nix), use it directly
+# This prevents recursive loops when running in devbox environment
+if [ -n "$REAL_TOOL" ]; then
+    echo "🚀  Ejecting direct $TOOL usage in favor of devbox..."
+    echo "💡  AI agents should use: devbox run $TOOL ..."
+    echo "🔄  Running $TOOL directly..."
+    exec "$REAL_TOOL" "$@"
+fi
+
 echo "🚀  Ejecting direct $TOOL usage in favor of devbox..."
 echo "💡  AI agents should use: devbox run $TOOL ..."
 if command -v devbox >/dev/null 2>&1; then
