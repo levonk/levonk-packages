@@ -49,8 +49,8 @@ test_package() {
         return
     fi
 
-    # Filter out expected reminder messages
-    unexpected=$(echo "$output" | rg -v "AI Agent Reminder" | rg -v "devbox environment" | rg -v "backwards compatibility" | rg -v "prefer" | rg -v "deprecated" | rg -v "Use" | rg -v "instead" | rg -v "Install" | rg -v "https://" | rg -v "❌" | rg -v "💡" | rg -v "📚" | rg -v "^$")
+    # Filter out expected reminder messages (case-insensitive)
+    unexpected=$(echo "$output" | rg -i -v "AI Agent Reminder" | rg -i -v "devbox environment" | rg -i -v "backwards compatibility" | rg -i -v "prefer" | rg -i -v "deprecated" | rg -i -v "Use" | rg -i -v "instead" | rg -i -v "Install" | rg -i -v "https://" | rg -i -v "❌" | rg -i -v "💡" | rg -i -v "📚" | rg -i -v "Detecting available alternatives" | rg -v "^$")
 
     if [ -z "$unexpected" ]; then
         echo "  FAIL: No version output found (only reminder messages)"
