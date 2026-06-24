@@ -12,7 +12,7 @@
 }:
 
 pkgs.writeShellScriptBin name ''
-  ${builtins.readFile ../wrappers/utils/rtk-wrapper.sh}
+  ${builtins.readFile ../../wrappers/utils/rtk-wrapper.sh}
   
   ${wrapperContent}
   

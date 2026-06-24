@@ -198,6 +198,7 @@ devbox run -- rtk just test-comprehensive-internal
 6. **Test individual packages** - Verify each package builds and runs
 7. **Update documentation** - Update AGENTS.md with correct counts and descriptions
 8. **Run full test suite** - Ensure nothing is broken
+9. **Do a test intsall in a temporary devbox.json** - Make sure the package works in a real environment
 
 **Common Pitfalls:**
 - ❌ Forgetting to add files to git (Nix will fail to build)
