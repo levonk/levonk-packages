@@ -2,7 +2,7 @@
 
 let
   # Import the shared library
-  devbox-auto-lib = import ../nix/lib/devbox-auto-lib.nix { inherit pkgs; };
+  devbox-auto-lib = import ./lib/devbox-auto-lib.nix { inherit pkgs; };
 in
 devbox-auto-lib {
   name = "rustc";

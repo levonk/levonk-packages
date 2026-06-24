@@ -2,7 +2,7 @@
 
 let
   # Import the shared library
-  devbox-rtk-lib = import ../nix/lib/devbox-rtk-lib.nix { inherit pkgs; };
+  devbox-rtk-lib = import ./lib/devbox-rtk-lib.nix { inherit pkgs; };
   
   # Wrapper content for governance logic
   wrapperContent = ''
