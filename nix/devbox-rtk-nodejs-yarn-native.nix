@@ -1,20 +1,33 @@
-{ pkgs }:
+{ pkgs, lib }:
 
 let
-  # Create npm wrapper
-  npm-wrapper = pkgs.writeScriptBin "npm" ''
-    ${builtins.readFile ../wrappers/devbox-rtk-tools/nodejs-yarn-native.sh}
+  # Import the shared library
+  devbox-rtk-lib = import ../nix/lib/devbox-rtk-lib.nix { inherit pkgs; };
+  
+  # Wrapper content for native tool usage
+  wrapperContent = ''
+    # No governance - use tools as-is
+    # Environment management + RTK optimization for called tool
+    devbox_wrap "$(basename "$0")" "$@"
   '';
+  
+  # Create npm wrapper
+  npm-wrapper = devbox-rtk-lib {
+    name = "npm";
+    inherit wrapperContent;
+  };
   
   # Create pnpm wrapper
-  pnpm-wrapper = pkgs.writeScriptBin "pnpm" ''
-    ${builtins.readFile ../wrappers/devbox-rtk-tools/nodejs-yarn-native.sh}
-  '';
+  pnpm-wrapper = devbox-rtk-lib {
+    name = "pnpm";
+    inherit wrapperContent;
+  };
   
   # Create yarn wrapper
-  yarn-wrapper = pkgs.writeScriptBin "yarn" ''
-    ${builtins.readFile ../wrappers/devbox-rtk-tools/nodejs-yarn-native.sh}
-  '';
+  yarn-wrapper = devbox-rtk-lib {
+    name = "yarn";
+    inherit wrapperContent;
+  };
 in
 pkgs.symlinkJoin {
   name = "devbox-rtk-nodejs-yarn-native";

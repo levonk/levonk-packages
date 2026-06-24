@@ -1,25 +1,46 @@
-{ pkgs }:
+{ pkgs, lib }:
 
 let
-  # Create npm wrapper
-  npm-wrapper = pkgs.writeScriptBin "npm" ''
-    ${builtins.readFile ../wrappers/devbox-rtk-tools/nodejs-bun-prefer.sh}
+  # Import the shared library
+  devbox-rtk-lib = import ../nix/lib/devbox-rtk-lib.nix { inherit pkgs; };
+  
+  # Wrapper content for prefer governance logic
+  wrapperContent = ''
+    # Governance: Prefer npm/pnpm/yarn → bun
+    case "$(basename "$0")" in
+        npm|pnpm|yarn)
+            echo "⚠️ Prefer bun over $(basename "$0"). Using bun..."
+            set -- bun "$@"
+            ;;
+    esac
+
+    # Environment management + RTK optimization for bun
+    devbox_wrap bun "$@"
   '';
+  
+  # Create npm wrapper
+  npm-wrapper = devbox-rtk-lib {
+    name = "npm";
+    inherit wrapperContent;
+  };
   
   # Create pnpm wrapper
-  pnpm-wrapper = pkgs.writeScriptBin "pnpm" ''
-    ${builtins.readFile ../wrappers/devbox-rtk-tools/nodejs-bun-prefer.sh}
-  '';
+  pnpm-wrapper = devbox-rtk-lib {
+    name = "pnpm";
+    inherit wrapperContent;
+  };
   
   # Create yarn wrapper
-  yarn-wrapper = pkgs.writeScriptBin "yarn" ''
-    ${builtins.readFile ../wrappers/devbox-rtk-tools/nodejs-bun-prefer.sh}
-  '';
+  yarn-wrapper = devbox-rtk-lib {
+    name = "yarn";
+    inherit wrapperContent;
+  };
   
   # Create bun wrapper
-  bun-wrapper = pkgs.writeScriptBin "bun" ''
-    ${builtins.readFile ../wrappers/devbox-rtk-tools/nodejs-bun-prefer.sh}
-  '';
+  bun-wrapper = devbox-rtk-lib {
+    name = "bun";
+    inherit wrapperContent;
+  };
 in
 pkgs.symlinkJoin {
   name = "devbox-rtk-nodejs-bun-prefer";

@@ -1,20 +1,40 @@
-{ pkgs }:
+{ pkgs, lib }:
 
 let
-  # Create npm wrapper
-  npm-wrapper = pkgs.writeScriptBin "npm" ''
-    ${builtins.readFile ../wrappers/devbox-rtk-tools/nodejs-yarn-prefer.sh}
+  # Import the shared library
+  devbox-rtk-lib = import ../nix/lib/devbox-rtk-lib.nix { inherit pkgs; };
+  
+  # Wrapper content for prefer governance logic
+  wrapperContent = ''
+    # Governance: Prefer npm/pnpm → yarn
+    case "$(basename "$0")" in
+        npm|pnpm)
+            echo "⚠️ Prefer yarn over $(basename "$0"). Using yarn..."
+            set -- yarn "$@"
+            ;;
+    esac
+
+    # Environment management + RTK optimization for yarn
+    devbox_wrap yarn "$@"
   '';
+  
+  # Create npm wrapper
+  npm-wrapper = devbox-rtk-lib {
+    name = "npm";
+    inherit wrapperContent;
+  };
   
   # Create pnpm wrapper
-  pnpm-wrapper = pkgs.writeScriptBin "pnpm" ''
-    ${builtins.readFile ../wrappers/devbox-rtk-tools/nodejs-yarn-prefer.sh}
-  '';
+  pnpm-wrapper = devbox-rtk-lib {
+    name = "pnpm";
+    inherit wrapperContent;
+  };
   
   # Create yarn wrapper
-  yarn-wrapper = pkgs.writeScriptBin "yarn" ''
-    ${builtins.readFile ../wrappers/devbox-rtk-tools/nodejs-yarn-prefer.sh}
-  '';
+  yarn-wrapper = devbox-rtk-lib {
+    name = "yarn";
+    inherit wrapperContent;
+  };
 in
 pkgs.symlinkJoin {
   name = "devbox-rtk-nodejs-yarn-prefer";

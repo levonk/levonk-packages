@@ -1,14 +1,3 @@
-#!/usr/bin/env bash
+# Wrapper: nodejs-bun-native
 # Combines: environment management (devbox) + token optimization (RTK) + native tool usage
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ -f "$SCRIPT_DIR/utils/devbox-manager.sh" ]; then
-    . "$SCRIPT_DIR/utils/devbox-manager.sh"
-fi
-if [ -f "$SCRIPT_DIR/utils/rtk-wrapper.sh" ]; then
-    . "$SCRIPT_DIR/utils/rtk-wrapper.sh"
-fi
-
-# No governance - use tools as-is
-# Environment management + RTK optimization for called tool
-devbox_wrap "$(basename "$0")" "$@"
+# Note: devbox-manager.sh and rtk-wrapper.sh are combined at build time via Nix

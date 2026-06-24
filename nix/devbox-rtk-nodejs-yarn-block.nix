@@ -1,20 +1,41 @@
-{ pkgs }:
+{ pkgs, lib }:
 
 let
-  # Create npm wrapper
-  npm-wrapper = pkgs.writeScriptBin "npm" ''
-    ${builtins.readFile ../wrappers/devbox-rtk-tools/nodejs-yarn-block.sh}
+  # Import the shared library
+  devbox-rtk-lib = import ../nix/lib/devbox-rtk-lib.nix { inherit pkgs; };
+  
+  # Wrapper content for block governance logic
+  wrapperContent = ''
+    # Governance: Block npm/pnpm
+    case "$(basename "$0")" in
+        npm|pnpm)
+            echo "❌ $(basename "$0") is blocked by policy. Use yarn instead."
+            echo "💡 Install yarn: https://yarnpkg.com/getting-started/install"
+            exit 1
+            ;;
+    esac
+
+    # Environment management + RTK optimization for yarn
+    devbox_wrap yarn "$@"
   '';
+  
+  # Create npm wrapper
+  npm-wrapper = devbox-rtk-lib {
+    name = "npm";
+    inherit wrapperContent;
+  };
   
   # Create pnpm wrapper
-  pnpm-wrapper = pkgs.writeScriptBin "pnpm" ''
-    ${builtins.readFile ../wrappers/devbox-rtk-tools/nodejs-yarn-block.sh}
-  '';
+  pnpm-wrapper = devbox-rtk-lib {
+    name = "pnpm";
+    inherit wrapperContent;
+  };
   
   # Create yarn wrapper
-  yarn-wrapper = pkgs.writeScriptBin "yarn" ''
-    ${builtins.readFile ../wrappers/devbox-rtk-tools/nodejs-yarn-block.sh}
-  '';
+  yarn-wrapper = devbox-rtk-lib {
+    name = "yarn";
+    inherit wrapperContent;
+  };
 in
 pkgs.symlinkJoin {
   name = "devbox-rtk-nodejs-yarn-block";
