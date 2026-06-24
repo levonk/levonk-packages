@@ -132,16 +132,12 @@ apk add command-prefer-pnpm
 
 ## 📦 Available Packages
 
-### RTK Token Optimization Wrappers (54 packages)
-- **Core Commands**: `rtk-wrap-ls`, `rtk-wrap-tree`, `rtk-wrap-cat`, `rtk-wrap-find`, `rtk-wrap-grep`, `rtk-wrap-diff`, `rtk-wrap-wc`, `rtk-wrap-curl`, `rtk-wrap-json`, `rtk-wrap-env`, `rtk-wrap-deps`, `rtk-wrap-test`, `rtk-wrap-err`
-- **Development Tools**: `rtk-wrap-git`, `rtk-wrap-npm`, `rtk-wrap-npx`, `rtk-wrap-pnpm`, `rtk-wrap-tsc`, `rtk-wrap-jest`, `rtk-wrap-vitest`, `rtk-wrap-pytest`, `rtk-wrap-mypy`, `rtk-wrap-ruff`, `rtk-wrap-prettier`, `rtk-wrap-eslint`, `rtk-wrap-prisma`, `rtk-wrap-next`, `rtk-wrap-lint`, `rtk-wrap-format`, `rtk-wrap-playwright`, `rtk-wrap-cargo`, `rtk-wrap-pip`, `rtk-wrap-go`, `rtk-wrap-golangci-lint`, `rtk-wrap-rubocop`, `rtk-wrap-rake`, `rtk-wrap-rspec`, `rtk-wrap-gradlew`
-- **Cloud & DevOps**: `rtk-wrap-gh`, `rtk-wrap-glab`, `rtk-wrap-docker`, `rtk-wrap-kubectl`, `rtk-wrap-oc`, `rtk-wrap-aws`, `rtk-wrap-psql`, `rtk-wrap-dotnet`, `rtk-wrap-wget`, `rtk-wrap-gt`
+### Integrated Devbox-RTK-Governance Packages (16 packages)
+- **Node.js with pnpm**: `devbox-rtk-nodejs-pnpm-prefer`, `devbox-rtk-nodejs-pnpm-force`, `devbox-rtk-nodejs-pnpm-block`, `devbox-rtk-nodejs-pnpm-native`
+- **Node.js with yarn**: `devbox-rtk-nodejs-yarn-prefer`, `devbox-rtk-nodejs-yarn-force`, `devbox-rtk-nodejs-yarn-block`, `devbox-rtk-nodejs-yarn-native`
+- **Node.js with bun**: `devbox-rtk-nodejs-bun-prefer`, `devbox-rtk-nodejs-bun-force`, `devbox-rtk-nodejs-bun-block`, `devbox-rtk-nodejs-bun-native`
+- **Python with uv**: `devbox-rtk-python-uv-prefer`, `devbox-rtk-python-uv-force`, `devbox-rtk-python-uv-block`, `devbox-rtk-python-uv-native`
 
-**Bundle Packages**:
-- `bundle-rtk-core` - Core command wrappers
-- `bundle-rtk-development` - Development tool wrappers
-- `bundle-rtk-cloud` - Cloud tool wrappers
-- `bundle-rtk-all` - All 54 RTK wrapper packages
 
 ### Devbox Auto-Environment Management (8 packages)
 - **Node.js**: `devbox-auto-npm`, `devbox-auto-pnpm`, `devbox-auto-yarn`
@@ -149,18 +145,24 @@ apk add command-prefer-pnpm
 - **Rust**: `devbox-auto-cargo`, `devbox-auto-rustc`
 - **Go**: `devbox-auto-go`
 
-**Bundle Packages**:
+**Bundle Devbox Packages**:
 - `bundle-devbox-auto-nodejs` - Node.js package managers
 - `bundle-devbox-auto-python` - Python tools
 - `bundle-devbox-auto-rust` - Rust toolchain
 - `bundle-devbox-auto-go` - Go tools
 - `bundle-devbox-auto-all` - All devbox-auto wrappers
 
-### Integrated Devbox-RTK-Governance Packages (16 packages)
-- **Node.js with pnpm**: `devbox-rtk-nodejs-pnpm-prefer`, `devbox-rtk-nodejs-pnpm-force`, `devbox-rtk-nodejs-pnpm-block`, `devbox-rtk-nodejs-pnpm-native`
-- **Node.js with yarn**: `devbox-rtk-nodejs-yarn-prefer`, `devbox-rtk-nodejs-yarn-force`, `devbox-rtk-nodejs-yarn-block`, `devbox-rtk-nodejs-yarn-native`
-- **Node.js with bun**: `devbox-rtk-nodejs-bun-prefer`, `devbox-rtk-nodejs-bun-force`, `devbox-rtk-nodejs-bun-block`, `devbox-rtk-nodejs-bun-native`
-- **Python with uv**: `devbox-rtk-python-uv-prefer`, `devbox-rtk-python-uv-force`, `devbox-rtk-python-uv-block`, `devbox-rtk-python-uv-native`
+### RTK Token Optimization Wrappers (54 packages)
+
+**Bundle RTK Packages**:
+- `bundle-rtk-core` - Core command wrappers
+- `bundle-rtk-development` - Development tool wrappers
+- `bundle-rtk-cloud` - Cloud tool wrappers
+- `bundle-rtk-all` - All 54 RTK wrapper packages
+
+- **Core Commands**: `rtk-wrap-ls`, `rtk-wrap-tree`, `rtk-wrap-cat`, `rtk-wrap-find`, `rtk-wrap-grep`, `rtk-wrap-diff`, `rtk-wrap-wc`, `rtk-wrap-curl`, `rtk-wrap-json`, `rtk-wrap-env`, `rtk-wrap-deps`, `rtk-wrap-test`, `rtk-wrap-err`
+- **Development Tools**: `rtk-wrap-git`, `rtk-wrap-npm`, `rtk-wrap-npx`, `rtk-wrap-pnpm`, `rtk-wrap-tsc`, `rtk-wrap-jest`, `rtk-wrap-vitest`, `rtk-wrap-pytest`, `rtk-wrap-mypy`, `rtk-wrap-ruff`, `rtk-wrap-prettier`, `rtk-wrap-eslint`, `rtk-wrap-prisma`, `rtk-wrap-next`, `rtk-wrap-lint`, `rtk-wrap-format`, `rtk-wrap-playwright`, `rtk-wrap-cargo`, `rtk-wrap-pip`, `rtk-wrap-go`, `rtk-wrap-golangci-lint`, `rtk-wrap-rubocop`, `rtk-wrap-rake`, `rtk-wrap-rspec`, `rtk-wrap-gradlew`
+- **Cloud & DevOps**: `rtk-wrap-gh`, `rtk-wrap-glab`, `rtk-wrap-docker`, `rtk-wrap-kubectl`, `rtk-wrap-oc`, `rtk-wrap-aws`, `rtk-wrap-psql`, `rtk-wrap-dotnet`, `rtk-wrap-wget`, `rtk-wrap-gt`
 
 ### npm Governance (12 packages)
 - **npm → pnpm**: `prefer-pnpm`, `eject-npm`, `force-pnpm`, `block-npm`
