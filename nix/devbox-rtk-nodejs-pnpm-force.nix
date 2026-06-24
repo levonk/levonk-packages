@@ -1,4 +1,4 @@
-{ pkgs, lib }:
+{ pkgs }:
 
 let
   # Import the shared library
