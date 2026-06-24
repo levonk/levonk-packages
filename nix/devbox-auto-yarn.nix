@@ -1,6 +1,10 @@
-{ pkgs }:
+{ pkgs, lib }:
 
-pkgs.writeShellScriptBin "yarn" ''
-  #!/usr/bin/env sh
-  ${builtins.readFile ../wrappers/devbox-auto-tools/yarn.devbox-auto.sh}
-''
+let
+  # Import the shared library
+  devbox-auto-lib = import ../nix/lib/devbox-auto-lib.nix { inherit pkgs; };
+in
+devbox-auto-lib {
+  name = "yarn";
+  tool = "yarn";
+}

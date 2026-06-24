@@ -1,10 +1,4 @@
-#!/usr/bin/env sh
+# Wrapper: python.devbox-auto
 # Devbox auto-wrapper for python
 # Automatically ensures python is available via devbox before execution
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ -f "$SCRIPT_DIR/utils/devbox-manager.sh" ]; then
-    . "$SCRIPT_DIR/utils/devbox-manager.sh"
-fi
-
-devbox_wrap python "$@"
+# Note: devbox-manager.sh is combined at build time via Nix

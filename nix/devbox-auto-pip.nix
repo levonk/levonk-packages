@@ -1,6 +1,10 @@
-{ pkgs }:
+{ pkgs, lib }:
 
-pkgs.writeShellScriptBin "pip" ''
-  #!/usr/bin/env sh
-  ${builtins.readFile ../wrappers/devbox-auto-tools/pip.devbox-auto.sh}
-''
+let
+  # Import the shared library
+  devbox-auto-lib = import ../nix/lib/devbox-auto-lib.nix { inherit pkgs; };
+in
+devbox-auto-lib {
+  name = "pip";
+  tool = "pip";
+}

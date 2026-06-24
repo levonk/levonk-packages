@@ -1,10 +1,4 @@
-#!/usr/bin/env sh
+# Wrapper: yarn.devbox-auto
 # Devbox auto-wrapper for yarn
 # Automatically ensures yarn is available via devbox before execution
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [ -f "$SCRIPT_DIR/utils/devbox-manager.sh" ]; then
-    . "$SCRIPT_DIR/utils/devbox-manager.sh"
-fi
-
-devbox_wrap yarn "$@"
+# Note: devbox-manager.sh is combined at build time via Nix
