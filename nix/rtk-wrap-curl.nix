@@ -1,5 +1,9 @@
 { pkgs }:
 
-pkgs.writeShellScriptBin "curl" ''
-  ${builtins.readFile ../wrappers/rtk-tools/curl.rtk-wrap.sh}
-''
+import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
+  name = "curl";
+  nativeCmd = "curl";
+  rtkSubcommand = "curl";
+  description = "auto-JSON detection and schema output";
+  wrapperContent = builtins.readFile ../wrappers/rtk-tools/curl.rtk-wrap.sh;
+}

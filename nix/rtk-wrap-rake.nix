@@ -1,5 +1,9 @@
 { pkgs }:
 
-pkgs.writeShellScriptBin "rake" ''
-  ${builtins.readFile ../wrappers/rtk-tools/rake.rtk-wrap.sh}
-''
+import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
+  name = "rake";
+  nativeCmd = "rake";
+  rtkSubcommand = "rake";
+  description = "compact minitest output";
+  wrapperContent = builtins.readFile ../wrappers/rtk-tools/rake.rtk-wrap.sh;
+}

@@ -1,5 +1,9 @@
 { pkgs }:
 
-pkgs.writeShellScriptBin "cargo" ''
-  ${builtins.readFile ../wrappers/rtk-tools/cargo.rtk-wrap.sh}
-''
+import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
+  name = "cargo";
+  nativeCmd = "cargo";
+  rtkSubcommand = "cargo";
+  description = "compact output";
+  wrapperContent = builtins.readFile ../wrappers/rtk-tools/cargo.rtk-wrap.sh;
+}
