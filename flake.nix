@@ -284,6 +284,7 @@
         force-nub = import ./nix/force-nub.nix { inherit pkgs nub-pkg; };
         block-nub = import ./nix/block-nub.nix { inherit pkgs; };
         eject-nub = import ./nix/eject-nub.nix { inherit pkgs; };
+        force-nub-from-npm = import ./nix/force-nub-from-npm.nix { inherit pkgs nub-pkg; };
         prefer-nub-from-pnpm = import ./nix/prefer-nub-from-pnpm.nix { inherit pkgs; };
         force-nub-from-pnpm = import ./nix/force-nub-from-pnpm.nix { inherit pkgs nub-pkg; };
         block-nub-from-pnpm = import ./nix/block-nub-from-pnpm.nix { inherit pkgs; };
@@ -365,6 +366,7 @@
           inherit force-nub;
           inherit block-nub;
           inherit eject-nub;
+          inherit force-nub-from-npm;
           inherit prefer-nub-from-pnpm;
           inherit force-nub-from-pnpm;
           inherit block-nub-from-pnpm;
