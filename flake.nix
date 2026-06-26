@@ -41,6 +41,8 @@
         force-bun-from-pnpm = import ./nix/force-bun-from-pnpm.nix { inherit pkgs; };
         block-bun-from-pnpm = import ./nix/block-bun-from-pnpm.nix { inherit pkgs; };
         eject-bun-from-pnpm = import ./nix/eject-bun-from-pnpm.nix { inherit pkgs; };
+        prefer-npm-from-pnpm = import ./nix/prefer-npm-from-pnpm.nix { inherit pkgs; };
+        force-npm-from-pnpm = import ./nix/force-npm-from-pnpm.nix { inherit pkgs; };
         prefer-npm-from-yarn = import ./nix/prefer-npm-from-yarn.nix { inherit pkgs; };
         force-npm-from-yarn = import ./nix/force-npm-from-yarn.nix { inherit pkgs; };
         block-npm-from-yarn = import ./nix/block-npm-from-yarn.nix { inherit pkgs; };
@@ -328,6 +330,8 @@
           inherit eject-yarn-from-pnpm;
           inherit prefer-bun-from-pnpm;
           inherit force-bun-from-pnpm;
+          inherit prefer-npm-from-pnpm;
+          inherit force-npm-from-pnpm;
           inherit block-bun-from-pnpm;
           inherit eject-bun-from-pnpm;
           # yarn governance packages
