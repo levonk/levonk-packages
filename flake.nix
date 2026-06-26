@@ -4,12 +4,14 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    nub.url = "github:nubjs/nub";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, nub }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        nub-pkg = nub.packages.${system}.nub;
         
         # Import all packages
         prefer-pnpm = import ./nix/prefer-pnpm.nix { inherit pkgs; };
@@ -275,9 +277,27 @@
         devbox-rtk-python-uv-block = import ./nix/devbox-rtk-python-uv-block.nix { inherit pkgs; };
         devbox-rtk-python-uv-native = import ./nix/devbox-rtk-python-uv-native.nix { inherit pkgs; };
         
+        # nub governance packages (depend on github:nubjs/nub)
+        prefer-nub = import ./nix/prefer-nub.nix { inherit pkgs; };
+        force-nub = import ./nix/force-nub.nix { inherit pkgs nub-pkg; };
+        block-nub = import ./nix/block-nub.nix { inherit pkgs; };
+        eject-nub = import ./nix/eject-nub.nix { inherit pkgs; };
+        prefer-nub-from-pnpm = import ./nix/prefer-nub-from-pnpm.nix { inherit pkgs; };
+        force-nub-from-pnpm = import ./nix/force-nub-from-pnpm.nix { inherit pkgs nub-pkg; };
+        block-nub-from-pnpm = import ./nix/block-nub-from-pnpm.nix { inherit pkgs; };
+        eject-nub-from-pnpm = import ./nix/eject-nub-from-pnpm.nix { inherit pkgs; };
+        prefer-nub-from-yarn = import ./nix/prefer-nub-from-yarn.nix { inherit pkgs; };
+        force-nub-from-yarn = import ./nix/force-nub-from-yarn.nix { inherit pkgs nub-pkg; };
+        block-nub-from-yarn = import ./nix/block-nub-from-yarn.nix { inherit pkgs; };
+        eject-nub-from-yarn = import ./nix/eject-nub-from-yarn.nix { inherit pkgs; };
+        prefer-nub-from-bun = import ./nix/prefer-nub-from-bun.nix { inherit pkgs; };
+        force-nub-from-bun = import ./nix/force-nub-from-bun.nix { inherit pkgs nub-pkg; };
+        block-nub-from-bun = import ./nix/block-nub-from-bun.nix { inherit pkgs; };
+        eject-nub-from-bun = import ./nix/eject-nub-from-bun.nix { inherit pkgs; };
+
         # Bundle package
         command-governance = import ./nix/bundle-command-governance.nix { inherit pkgs; };
-        
+
       in
       {
         packages = {
@@ -336,6 +356,23 @@
           inherit force-yarn-from-bun;
           inherit block-yarn-from-bun;
           inherit eject-yarn-from-bun;
+          # nub governance packages (depend on github:nubjs/nub)
+          inherit prefer-nub;
+          inherit force-nub;
+          inherit block-nub;
+          inherit eject-nub;
+          inherit prefer-nub-from-pnpm;
+          inherit force-nub-from-pnpm;
+          inherit block-nub-from-pnpm;
+          inherit eject-nub-from-pnpm;
+          inherit prefer-nub-from-yarn;
+          inherit force-nub-from-yarn;
+          inherit block-nub-from-yarn;
+          inherit eject-nub-from-yarn;
+          inherit prefer-nub-from-bun;
+          inherit force-nub-from-bun;
+          inherit block-nub-from-bun;
+          inherit eject-nub-from-bun;
           # Other packages
           inherit prefer-devbox;
           inherit prefer-corepack;
