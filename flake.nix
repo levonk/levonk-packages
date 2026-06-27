@@ -48,6 +48,7 @@
         block-npm-from-yarn = import ./nix/block-npm-from-yarn.nix { inherit pkgs; };
         eject-npm-from-yarn = import ./nix/eject-npm-from-yarn.nix { inherit pkgs; };
         prefer-pnpm-from-yarn = import ./nix/prefer-pnpm-from-yarn.nix { inherit pkgs; };
+        force-pnpm-from-npm = import ./nix/force-pnpm-from-npm.nix { inherit pkgs; };
         force-pnpm-from-yarn = import ./nix/force-pnpm-from-yarn.nix { inherit pkgs; };
         block-pnpm-from-yarn = import ./nix/block-pnpm-from-yarn.nix { inherit pkgs; };
         eject-pnpm-from-yarn = import ./nix/eject-pnpm-from-yarn.nix { inherit pkgs; };
@@ -341,6 +342,7 @@
           inherit block-npm-from-yarn;
           inherit eject-npm-from-yarn;
           inherit prefer-pnpm-from-yarn;
+          inherit force-pnpm-from-npm;
           inherit force-pnpm-from-yarn;
           inherit block-pnpm-from-yarn;
           inherit eject-pnpm-from-yarn;
