@@ -184,6 +184,15 @@ apk add command-prefer-pnpm
 - **bun → pnpm**: `prefer-pnpm-from-bun`, `eject-pnpm-from-bun`, `force-pnpm-from-bun`, `block-pnpm-from-bun`
 - **bun → yarn**: `prefer-yarn-from-bun`, `eject-yarn-from-bun`, `force-yarn-from-bun`, `block-yarn-from-bun`
 
+### nub Governance (17 packages, depend on `github:nubjs/nub`)
+- **all → nub (consolidated)**: `prefer-nub`, `force-nub`, `block-nub`, `eject-nub`
+- **npm → nub**: `force-nub-from-npm`
+- **pnpm → nub**: `prefer-nub-from-pnpm`, `force-nub-from-pnpm`, `block-nub-from-pnpm`, `eject-nub-from-pnpm`
+- **yarn → nub**: `prefer-nub-from-yarn`, `force-nub-from-yarn`, `block-nub-from-yarn`, `eject-nub-from-yarn`
+- **bun → nub**: `prefer-nub-from-bun`, `force-nub-from-bun`, `block-nub-from-bun`, `eject-nub-from-bun`
+
+> `force-nub*` packages install nub from `github:nubjs/nub` (compiled from source). `prefer-nub*`/`block-nub*`/`eject-nub*` do not install nub — it must already be on PATH.
+
 ### pip Governance (3 packages)
 - **pip → uv**: `prefer-uv`, `eject-pip`, `block-pip`
 
@@ -298,6 +307,72 @@ devbox add github:levonk/levonk-packages#block-npm
 npm install
 # ❌ npm is blocked by policy. Use pnpm or corepack instead.
 ```
+
+## 🔗 Stacking Packages & Avoiding Collisions
+
+Each governance package wraps one or more binaries (e.g. `npm`, `pnpm`, `yarn`, `bun`). When you install multiple packages that wrap the **same** binary, they collide — whichever lands last in PATH wins, and the result is unpredictable. The rule is simple:
+
+> **Each binary should be wrapped by exactly one package.**
+
+### How consolidated packages work
+
+The main `prefer-{tool}` and `force-{tool}` packages are **consolidated** — each wraps all rival tools in one install:
+
+| Package | Wraps | Redirects to |
+|---|---|---|
+| `prefer-nub` / `force-nub` | npm, pnpm, yarn, bun | nub |
+| `prefer-pnpm` / `force-pnpm` | npm, yarn, bun | pnpm |
+| `prefer-yarn` / `force-yarn` | npm, pnpm, bun | yarn |
+| `prefer-bun` / `force-bun` | npm, pnpm, yarn | bun |
+| `prefer-npm` / `force-npm` | pnpm, yarn, bun | npm |
+
+Note: `prefer-pnpm`/`force-pnpm`/etc. do **not** wrap nub — nub is the superset tool, and users on nub shouldn't be downgraded.
+
+### Don't stack consolidated packages
+
+Installing `prefer-nub` + `force-nub` is pointless — force wins, prefer is dead weight. Installing `force-pnpm` + `force-nub` is broken — both wrap `npm`, `yarn`, and `bun`, so they collide.
+
+### Do: mix governance modes per tool with `from-*` building blocks
+
+The `*-from-{tool}` packages wrap a **single** binary, so they compose without collisions. This lets you apply different governance modes to different tools:
+
+```bash
+# pnpm: polite suggestion to use nub (warns but falls back to pnpm)
+nix profile install github:levonk/levonk-packages#prefer-nub-from-pnpm
+
+# npm, yarn, bun: hard redirect to nub (no escape)
+nix profile install github:levonk/levonk-packages#force-nub-from-npm
+nix profile install github:levonk/levonk-packages#force-nub-from-yarn
+nix profile install github:levonk/levonk-packages#force-nub-from-bun
+```
+
+Each package wraps exactly one binary — no collisions:
+
+| Package | Wraps | Mode |
+|---|---|---|
+| `prefer-nub-from-pnpm` | `pnpm` only | warns → nub, falls back to pnpm |
+| `force-nub-from-npm` | `npm` only | hard → nub |
+| `force-nub-from-yarn` | `yarn` only | hard → nub |
+| `force-nub-from-bun` | `bun` only | hard → nub |
+
+### Don't: add `force-pnpm` to the above combo
+
+`force-pnpm` wraps `npm`, `yarn`, and `bun` — the same binaries already wrapped by `force-nub-from-npm`/`yarn`/`bun`. Adding it reintroduces collisions. If pnpm should be left alone (only nudged toward nub), `prefer-nub-from-pnpm` already handles that.
+
+### Quick reference: valid combos
+
+| Goal | Install |
+|---|---|
+| Everything → pnpm, hard | `force-pnpm` (one package) |
+| Everything → nub, hard | `force-nub` (one package) |
+| Everything → nub, polite | `prefer-nub` (one package) |
+| pnpm polite, rest forced → nub | `prefer-nub-from-pnpm` + `force-nub-from-npm` + `force-nub-from-yarn` + `force-nub-from-bun` |
+| npm blocked, rest → pnpm | `block-npm` + `force-pnpm-from-yarn` + `force-pnpm-from-bun` |
+
+### nub packages and the nub flake
+
+- **`force-nub*` packages** pull nub from [`github:nubjs/nub`](https://github.com/nubjs/nub) as a flake input — nub is compiled from source (Rust) and the wrapper execs the store-path binary.
+- **`prefer-nub*`, `block-nub*`, `eject-nub*` packages** do **not** install nub — they use `command -v nub` (PATH lookup) or just print an error. nub must already be on PATH.
 
 ## 🧪 Testing
 
