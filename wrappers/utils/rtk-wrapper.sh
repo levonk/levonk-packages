@@ -3,6 +3,10 @@
 # Centralized logic for RTK command wrapping
 # Usage: source this script, then call rtk_wrap <native_cmd> <rtk_subcommand> [description] -- <script_args...>
 #
+# Set RTK_ONLY=1 before calling rtk_wrap for RTK-specific commands that have
+# no native equivalent (err, json, deps, lint, format, etc.). The wrapper IS
+# the command — it always runs through RTK and fails clearly if RTK is absent.
+#
 # native_cmd may be:
 #   - An absolute path (e.g. /nix/store/.../bin/git) — exec'd directly, no PATH lookup.
 #   - A bare command name (e.g. "eslint") — resolved via PATH excluding this
@@ -48,6 +52,22 @@ rtk_wrap() {
     local description="${3:-token-optimized output}"
     shift 3
     # "$@" now contains the script's original arguments (passed after the 3 fixed args)
+
+    # RTK_ONLY commands have no native fallback — the wrapper IS the command
+    if [[ "${RTK_ONLY:-0}" -eq 1 ]]; then
+        if [ -n "${RTK_WRAPPER_IN_PROGRESS:-}" ]; then
+            echo "❌ $rtk_subcommand is an RTK-only command but RTK called back into the wrapper (recursion). Aborting." >&2
+            exit 1
+        fi
+        if command -v rtk >/dev/null 2>&1; then
+            export RTK_WRAPPER_IN_PROGRESS=1
+            exec rtk "$rtk_subcommand" "$@"
+        else
+            echo "❌ $rtk_subcommand requires RTK to be installed. This is an RTK-specific command with no native fallback." >&2
+            echo "   Install RTK: https://github.com/rtk-ai/rtk" >&2
+            exit 1
+        fi
+    fi
 
     # Resolve the real native binary (absolute path or PATH-excluded lookup)
     local real_bin

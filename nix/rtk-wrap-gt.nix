@@ -5,5 +5,6 @@ import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
   nativeCmd = "gt";
   rtkSubcommand = "gt";
   description = "compact stacked PR output";
+  rtkOnly = true;
   wrapperContent = builtins.readFile ../wrappers/rtk-tools/gt.rtk-wrap.sh;
 }

@@ -8,6 +8,11 @@
 # store path), preventing infinite recursion when the wrapper itself is in PATH.
 # When null, the wrapper falls back to PATH-exclusion (removing its own directory
 # from PATH before resolving the native command).
+#
+# rtkOnly (optional, default false): when true, this is an RTK-specific command
+# with no native equivalent (e.g. err, json, deps, lint, format). The wrapper
+# IS the command — it always runs through RTK and fails with a clear error if
+# RTK is not installed. No native fallback is attempted.
 
 {
   name,
@@ -16,6 +21,7 @@
   description ? "token-optimized output",
   wrapperContent,
   nativePackage ? null,
+  rtkOnly ? false,
 }:
 
 let
@@ -29,5 +35,5 @@ pkgs.writeShellScriptBin name ''
 
   ${wrapperContent}
 
-  rtk_wrap ${nativeBin} ${rtkSubcommand} "${description}" "$@"
+  RTK_ONLY=${if rtkOnly then "1" else "0"} rtk_wrap ${nativeBin} ${rtkSubcommand} "${description}" "$@"
 ''
