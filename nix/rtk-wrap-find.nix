@@ -5,5 +5,6 @@ import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
   nativeCmd = "find";
   rtkSubcommand = "find";
   description = "compact tree output";
+  nativePackage = pkgs.findutils;
   wrapperContent = builtins.readFile ../wrappers/rtk-tools/find.rtk-wrap.sh;
 }

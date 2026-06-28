@@ -5,5 +5,6 @@ import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
   nativeCmd = "git";
   rtkSubcommand = "git";
   description = "token-optimized output";
+  nativePackage = pkgs.git;
   wrapperContent = builtins.readFile ../wrappers/rtk-tools/git.rtk-wrap.sh;
 }

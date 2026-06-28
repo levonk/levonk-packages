@@ -7,4 +7,4 @@ if [ -f "$SCRIPT_DIR/utils/rtk-wrapper.sh" ]; then
     . "$SCRIPT_DIR/utils/rtk-wrapper.sh"
 fi
 
-rtk_wrap deps deps "summarize project dependencies"
+rtk_wrap deps deps "summarize project dependencies" "$@"

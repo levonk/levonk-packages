@@ -5,5 +5,6 @@ import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
   nativeCmd = "npm";
   rtkSubcommand = "npm";
   description = "filtered output";
+  nativePackage = pkgs.nodejs;
   wrapperContent = builtins.readFile ../wrappers/rtk-tools/npm.rtk-wrap.sh;
 }

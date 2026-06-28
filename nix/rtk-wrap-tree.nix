@@ -5,5 +5,6 @@ import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
   nativeCmd = "tree";
   rtkSubcommand = "tree";
   description = "token-optimized output";
+  nativePackage = pkgs.tree;
   wrapperContent = builtins.readFile ../wrappers/rtk-tools/tree.rtk-wrap.sh;
 }

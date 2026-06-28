@@ -5,5 +5,6 @@ import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
   nativeCmd = "npx";
   rtkSubcommand = "npx";
   description = "intelligent routing";
+  nativePackage = pkgs.nodejs;
   wrapperContent = builtins.readFile ../wrappers/rtk-tools/npx.rtk-wrap.sh;
 }

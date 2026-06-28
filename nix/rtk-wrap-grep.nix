@@ -5,5 +5,6 @@ import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
   nativeCmd = "grep";
   rtkSubcommand = "grep";
   description = "compact grep output";
+  nativePackage = pkgs.gnugrep;
   wrapperContent = builtins.readFile ../wrappers/rtk-tools/grep.rtk-wrap.sh;
 }

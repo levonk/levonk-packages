@@ -5,5 +5,6 @@ import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
   nativeCmd = "docker";
   rtkSubcommand = "docker";
   description = "compact output";
+  nativePackage = pkgs.docker;
   wrapperContent = builtins.readFile ../wrappers/rtk-tools/docker.rtk-wrap.sh;
 }

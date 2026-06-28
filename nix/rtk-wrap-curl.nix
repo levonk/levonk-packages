@@ -5,5 +5,6 @@ import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
   nativeCmd = "curl";
   rtkSubcommand = "curl";
   description = "auto-JSON detection and schema output";
+  nativePackage = pkgs.curl;
   wrapperContent = builtins.readFile ../wrappers/rtk-tools/curl.rtk-wrap.sh;
 }

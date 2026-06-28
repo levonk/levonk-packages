@@ -5,5 +5,6 @@ import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
   nativeCmd = "go";
   rtkSubcommand = "go";
   description = "compact output";
+  nativePackage = pkgs.go;
   wrapperContent = builtins.readFile ../wrappers/rtk-tools/go.rtk-wrap.sh;
 }

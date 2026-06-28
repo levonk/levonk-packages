@@ -5,5 +5,6 @@ import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
   nativeCmd = "pnpm";
   rtkSubcommand = "pnpm";
   description = "ultra-compact output";
+  nativePackage = pkgs.pnpm;
   wrapperContent = builtins.readFile ../wrappers/rtk-tools/pnpm.rtk-wrap.sh;
 }
