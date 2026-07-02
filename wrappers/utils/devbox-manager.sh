@@ -61,28 +61,58 @@ is_package_available() {
     command -v "$package" >/dev/null 2>&1
 }
 
+# Resolve the devbox binary, preferring an upstream install over the nixpkgs
+# fallback baked in at build time.
+# 1. Look for devbox on PATH excluding this wrapper's own directory (finds
+#    user's upstream install — jetify.com installer, manual build, etc. — never
+#    the nixpkgs copy that might share the bundle's store path).
+# 2. If not found, fall back to DEVBOX_FALLBACK (absolute store path set at
+#    build time by the Nix lib, pointing to nixpkgs devbox).
+# 3. If neither, return failure so the caller can warn / fall back to native.
+_devbox_resolve_devbox() {
+    local _wrapper_dir
+    _wrapper_dir="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+    if [ -n "$_wrapper_dir" ]; then
+        local _clean_path="$PATH"
+        _clean_path="${_clean_path#"$_wrapper_dir:"}"
+        _clean_path="${_clean_path%":$_wrapper_dir"}"
+        _clean_path="${_clean_path//":$_wrapper_dir:"/:}"
+        local _found
+        _found="$(PATH="$_clean_path" command -v devbox 2>/dev/null)" || true
+        if [ -n "$_found" ]; then
+            printf '%s' "$_found"
+            return 0
+        fi
+    fi
+    if [ -n "${DEVBOX_FALLBACK:-}" ] && [ -x "${DEVBOX_FALLBACK}" ]; then
+        printf '%s' "$DEVBOX_FALLBACK"
+        return 0
+    fi
+    return 1
+}
+
 # Main devbox wrapper function
 devbox_wrap() {
     local tool="$1"
     shift
-    
+
     # Check recursion prevention - if already being managed by devbox, run directly
     if [ -n "${DEVBOX_AUTO_IN_PROGRESS:-}" ]; then
         exec "$tool" "$@"
     fi
-    
+
     # Check if we're already in a devbox environment
     if is_in_devbox; then
         # Already in devbox, just run the command
         exec "$tool" "$@"
     fi
-    
+
     # Check if tool is already available in current environment
     if is_package_available "$tool"; then
         # Tool available, run directly
         exec "$tool" "$@"
     fi
-    
+
     # Find devbox.json
     local devbox_dir
     if ! devbox_dir="$(find_devbox_json_dir)"; then
@@ -90,17 +120,25 @@ devbox_wrap() {
         echo "⚠️ No devbox.json found, running $tool directly"
         exec "$tool" "$@"
     fi
-    
+
+    # Resolve devbox binary: prefer upstream, fall back to bundled nixpkgs copy
+    local devbox_bin
+    if ! devbox_bin="$(_devbox_resolve_devbox)"; then
+        echo "⚠️ devbox not found and no fallback available. Running $tool directly." >&2
+        echo "   Install devbox: https://www.jetify.com/devbox" >&2
+        exec "$tool" "$@"
+    fi
+
     # Add package to devbox.json if not already present
     add_package_to_devbox "$tool" "$devbox_dir"
-    
+
     # Run via devbox with recursion prevention
     export DEVBOX_AUTO_IN_PROGRESS=1
     echo "📦 Adding $tool to devbox environment..."
-    
+
     # Run via devbox
     if [ -d "$devbox_dir" ]; then
-        cd "$devbox_dir" && exec devbox run -- "$tool" "$@"
+        cd "$devbox_dir" && exec "$devbox_bin" run -- "$tool" "$@"
     else
         # Fallback to direct execution
         exec "$tool" "$@"

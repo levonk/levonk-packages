@@ -46,6 +46,36 @@ _rtk_resolve_native() {
     printf '%s' "$native_cmd"
 }
 
+# Resolve the rtk binary itself, preferring an upstream install over the
+# nixpkgs fallback baked in at build time.
+# 1. Look for rtk on PATH excluding this wrapper's own directory (finds user's
+#    upstream install — github:rtk-ai/rtk, manual build, etc. — never the
+#    nixpkgs copy that might share the bundle's store path).
+# 2. If not found, fall back to RTK_FALLBACK (absolute store path set at build
+#    time by the Nix lib, pointing to nixpkgs rtk).
+# 3. If neither, return failure so the caller can warn / fall back to native.
+_rtk_resolve_rtk() {
+    local _wrapper_dir
+    _wrapper_dir="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+    if [ -n "$_wrapper_dir" ]; then
+        local _clean_path="$PATH"
+        _clean_path="${_clean_path#"$_wrapper_dir:"}"
+        _clean_path="${_clean_path%":$_wrapper_dir"}"
+        _clean_path="${_clean_path//":$_wrapper_dir:"/:}"
+        local _found
+        _found="$(PATH="$_clean_path" command -v rtk 2>/dev/null)" || true
+        if [ -n "$_found" ]; then
+            printf '%s' "$_found"
+            return 0
+        fi
+    fi
+    if [ -n "${RTK_FALLBACK:-}" ] && [ -x "${RTK_FALLBACK}" ]; then
+        printf '%s' "$RTK_FALLBACK"
+        return 0
+    fi
+    return 1
+}
+
 rtk_wrap() {
     local native_cmd="$1"
     local rtk_subcommand="${2:-$1}"
@@ -59,9 +89,10 @@ rtk_wrap() {
             echo "❌ $rtk_subcommand is an RTK-only command but RTK called back into the wrapper (recursion). Aborting." >&2
             exit 1
         fi
-        if command -v rtk >/dev/null 2>&1; then
+        local _rtk_bin
+        if _rtk_bin="$(_rtk_resolve_rtk)"; then
             export RTK_WRAPPER_IN_PROGRESS=1
-            exec rtk "$rtk_subcommand" "$@"
+            exec "$_rtk_bin" "$rtk_subcommand" "$@"
         else
             echo "❌ $rtk_subcommand requires RTK to be installed. This is an RTK-specific command with no native fallback." >&2
             echo "   Install RTK: https://github.com/rtk-ai/rtk" >&2
@@ -79,11 +110,11 @@ rtk_wrap() {
         exec "$real_bin" "$@"
     fi
 
-    # Check if RTK is available
-    if command -v rtk >/dev/null 2>&1; then
-        # Run through RTK with marker to prevent recursion
+    # Resolve rtk: prefer upstream install, fall back to bundled nixpkgs copy
+    local _rtk_bin
+    if _rtk_bin="$(_rtk_resolve_rtk)"; then
         export RTK_WRAPPER_IN_PROGRESS=1
-        exec rtk "$rtk_subcommand" "$@"
+        exec "$_rtk_bin" "$rtk_subcommand" "$@"
     else
         # Fallback to native command if RTK not installed
         echo "⚠️ RTK not found, using native $native_cmd. Install RTK for $description." >&2
