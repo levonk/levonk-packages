@@ -39,21 +39,15 @@ nodes:
     tool: shell
     config:
       command: |
-        # Generate wrapper scripts for missing commands
+        # Generate wrapper stubs for missing commands
+        # Stubs are 2-line headers; the actual wrap logic is inlined at build time by rtk-wrap-lib.nix
         while read cmd; do
           if [ -n "$cmd" ]; then
             echo "Generating wrapper for: $cmd"
             cat > "wrappers/rtk-tools/$cmd.rtk-wrap.sh" << EOF
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # RTK wrapper for $cmd command
 # Transparently runs $cmd through RTK for compact output
-
-SCRIPT_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
-if [ -f "\$SCRIPT_DIR/utils/rtk-wrapper.sh" ]; then
-    . "\$SCRIPT_DIR/utils/rtk-wrapper.sh"
-fi
-
-rtk_wrap $cmd $cmd "compact output"
 EOF
             chmod +x "wrappers/rtk-tools/$cmd.rtk-wrap.sh"
           fi
@@ -64,17 +58,20 @@ EOF
     tool: shell
     config:
       command: |
-        # Generate Nix derivations for missing commands
+        # Generate Nix derivations using the shared rtk-wrap-lib.nix library
         while read cmd; do
           if [ -n "$cmd" ]; then
             echo "Generating Nix derivation for: $cmd"
             cat > "nix/rtk-wrap-$cmd.nix" << EOF
 { pkgs }:
 
-pkgs.writeShellScriptBin "$cmd" ''
-  #!/usr/bin/env sh
-  \${builtins.readFile ../wrappers/rtk-tools/$cmd.rtk-wrap.sh}
-''
+import ./lib/rtk-wrap-lib.nix { inherit pkgs; } {
+  name = "$cmd";
+  nativeCmd = "$cmd";
+  rtkSubcommand = "$cmd";
+  description = "compact output";
+  wrapperContent = builtins.readFile ../wrappers/rtk-tools/$cmd.rtk-wrap.sh;
+}
 EOF
           fi
         done < /tmp/missing-commands.txt
@@ -118,79 +115,6 @@ EOF
           fi
         done < /tmp/missing-commands.txt
 
-  - id: update-generator
-    description: Update generate-rtk-suite.sh with new commands
-    tool: shell
-    config:
-      command: |
-        # Update the generator script with new commands
-        while read cmd; do
-          if [ -n "$cmd" ]; then
-            if ! grep -q "\"$cmd:$cmd" scripts/generate-rtk-suite.sh; then
-              echo "Adding $cmd to generator script"
-              # Find last RTK_COMMANDS entry
-              last_entry=$(grep -n "\".*:.*:.*\"" scripts/generate-rtk-suite.sh | tail -1 | cut -d: -f1)
-              sed -i "${last_entry}a\\    \"$cmd:$cmd:compact output\"" scripts/generate-rtk-suite.sh
-            fi
-          fi
-        done < /tmp/missing-commands.txt
-
-  - id: generate-devbox-rtk
-    description: Generate devbox-rtk integrated packages for new commands
-    tool: shell
-    config:
-      command: |
-        # For development tools, generate devbox-rtk integrated packages
-        dev_tools=("npm" "pnpm" "yarn" "bun" "pip" "uv" "cargo" "go" "python" "tsc" "jest" "vitest" "pytest" "mypy" "ruff" "prettier" "eslint" "prisma" "next" "lint" "format" "playwright" "rubocop" "rake" "rspec" "gradlew")
-        
-        while read cmd; do
-          if [ -n "$cmd" ]; then
-            # Check if it's a dev tool
-            for dev_tool in "${dev_tools[@]}"; do
-              if [[ "$cmd" == "$dev_tool" ]]; then
-                echo "Generating devbox-rtk package for: $cmd"
-                # Create integrated wrapper
-                cat > "wrappers/devbox-rtk-tools/$cmd-native.sh" << EOF
-#!/usr/bin/env sh
-# Integrated devbox + RTK wrapper for $cmd (native, no governance)
-# Combines: environment management (devbox) + token optimization (RTK)
-
-SCRIPT_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
-if [ -f "\$SCRIPT_DIR/utils/devbox-manager.sh" ]; then
-    . "\$SCRIPT_DIR/utils/devbox-manager.sh"
-fi
-if [ -f "\$SCRIPT_DIR/utils/rtk-wrapper.sh" ]; then
-    . "\$SCRIPT_DIR/utils/rtk-wrapper.sh"
-fi
-
-# No governance - use tool as-is
-devbox_wrap $cmd "\$@"
-EOF
-                chmod +x "wrappers/devbox-rtk-tools/$cmd-native.sh"
-                
-                # Create Nix derivation
-                cat > "nix/devbox-rtk-$cmd-native.nix" << EOF
-{ pkgs }:
-
-let
-  ${cmd}-wrapper = pkgs.writeShellScriptBin "${cmd}" ''
-    #!/usr/bin/env sh
-    \${builtins.readFile ../wrappers/devbox-rtk-tools/${cmd}-native.sh}
-  '';
-in
-pkgs.symlinkJoin {
-  name = "devbox-rtk-${cmd}-native";
-  paths = [
-    ${cmd}-wrapper
-  ];
-}
-EOF
-                break
-              fi
-            done
-          fi
-        done < /tmp/missing-commands.txt
-
   - id: update-documentation
     description: Update AGENTS.md with new package counts
     tool: shell
@@ -198,11 +122,8 @@ EOF
       command: |
         # Count total RTK wrappers
         total=$(ls wrappers/rtk-tools/*.rtk-wrap.sh 2>/dev/null | wc -l)
-        # Update AGENTS.md
-        sed -i "s/rtk-tools.*([0-9]* files)/rtk-tools/          ($total files) - RTK token optimization wrappers (ls, tree, git, npm, pnpm, tsc, jest, etc.)/" AGENTS.md
-        sed -i "s/\*\*[0-9]* wrapper scripts\*\*/\*\*$total wrapper scripts\*\*/" AGENTS.md
-        sed -i "s/\*\*[0-9]* Nix derivations\*\*/\*\*$total Nix derivations\*\*/" AGENTS.md
-        sed -i "s/All [0-9]* RTK wrapper packages/All $total RTK wrapper packages/" AGENTS.md
+        # Update the file count in the AGENTS.md directory tree
+        sed -i "s/rtk-tools\/.*([0-9]* files)/rtk-tools\/          ($total files)/" AGENTS.md
         echo "Updated documentation: $total RTK wrappers"
 
   - id: commit-changes
@@ -210,7 +131,7 @@ EOF
     tool: shell
     config:
       command: |
-        git add wrappers/rtk-tools/*.rtk-wrap.sh nix/rtk-wrap-*.nix flake.nix nix/bundle-rtk-*.nix scripts/generate-rtk-suite.sh AGENTS.md wrappers/devbox-rtk-tools/*.sh nix/devbox-rtk-*.nix
+        git add wrappers/rtk-tools/*.rtk-wrap.sh nix/rtk-wrap-*.nix flake.nix nix/bundle-rtk-*.nix AGENTS.md
         git commit -m "sync: add new RTK wrapper packages from official README
 
 Synced with https://github.com/rtk-ai/rtk/blob/develop/README.md
@@ -233,10 +154,6 @@ edges:
   - from: update-flake
     to: update-bundles
   - from: update-bundles
-    to: update-generator
-  - from: update-generator
-    to: generate-devbox-rtk
-  - from: generate-devbox-rtk
     to: update-documentation
   - from: update-documentation
     to: commit-changes

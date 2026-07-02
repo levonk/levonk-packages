@@ -232,18 +232,6 @@ Keep RTK wrapper packages synchronized with the official RTK README automaticall
 bun run cli workflow run sync-rtk-commands
 ```
 
-**What it does**:
-1. Fetches the latest RTK README from GitHub
-2. Extracts all RTK commands from the README
-3. Compares with existing wrapper packages
-4. Generates missing wrapper scripts automatically
-5. Creates Nix derivations for new wrappers
-6. Updates flake.nix and bundle packages
-7. Updates generator scripts
-8. Generates devbox-rtk integrated packages for dev tools
-9. Updates documentation with new package counts
-10. Commits all changes with a descriptive message
-
 **Workflow location**: `.agents/workflows/sync-rtk-commands.yaml` (also in `.devin/workflows/`)
 
 ### 🎯 Dynamic Package Detection
@@ -513,34 +501,9 @@ just test
 
 ## 🏗️ Architecture
 
-### Behavioral Model
+See [docs/SPEC.md](docs/SPEC.md) for the behavioral model, dependency graph, and cross-ecosystem support.
 
-- **`prefer-*`** - Soft guidance with warnings and delegation
-- **`eject-*`** - Remove tool and block future installation
-- **`force-*`** - Strict replacement with preferred tool
-- **`block-*`** - Complete prohibition with error exit
-
-### Dependency Graph
-
-```
-prefer-*     (no dependency)
-force-*  →   eject-*
-block-*  →   eject-*
-eject-*      (base layer)
-```
-
-### Cross-Ecosystem Support
-
-This repository generates packages that work across multiple ecosystems:
-- Nix (flakes, Devbox, home-manager, NixOS) - Available immediately
-- Alpine Linux (APK) - Generated via `just generate`
-- Debian/Ubuntu (APT/DEB) - Generated via `just generate`
-- Fedora (RPM) - Generated via `just generate`
-- Arch Linux (PKGBUILD) - Generated via `just generate`
-- Homebrew (Formula) - Generated via `just generate`
-- mise (plugin shims) - Generated via `just generate`
-
-**Note**: Run `just generate` to create packages for all ecosystems from the source wrappers.
+Packages use shared Nix libraries in `nix/lib/` that inline utility scripts at build time. See [AGENTS.md](AGENTS.md) for wrapper-authoring guidance.
 
 ## 🔄 Integration with Existing Workflows
 
@@ -597,11 +560,9 @@ npm --version  # Shows governance behavior
 
 1. Fork the repository
 2. Create a feature branch
-3. Add wrapper scripts in `wrappers/`
-4. Create Nix derivations in `nix/`
-5. Update packaging generators
-6. Test with `just test`
-7. Submit a pull request
+3. See [AGENTS.md](AGENTS.md) for wrapper-authoring guidance (shared Nix libraries in `nix/lib/`)
+4. Test with `just test`
+5. Submit a pull request
 
 ## 📄 License
 

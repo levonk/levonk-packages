@@ -93,9 +93,8 @@ With a warning: `⚠️ RTK not found, using native ls. Install RTK for token-op
    fi
    rtk_wrap <native_cmd> <rtk_subcommand> "<description>"
    ```
-3. Create corresponding Nix derivation in `../../nix/rtk-wrap-<cmd>.nix`
+3. Create corresponding Nix derivation in `../../nix/rtk-wrap-<cmd>.nix` using `../../nix/lib/rtk-wrap-lib.nix`
 4. Update `../../flake.nix` with new package
-5. Run the automated generator: `./scripts/generate-rtk-suite.sh`
 
 ## RTK Compatibility
 

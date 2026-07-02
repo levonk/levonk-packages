@@ -168,10 +168,9 @@ The devbox-auto wrappers are designed to work with the existing devbox-based tes
    devbox_wrap <tool> "$@"
    ```
 
-2. Create Nix derivation in `../../nix/devbox-auto-<tool>.nix`
+2. Create Nix derivation in `../../nix/devbox-auto-<tool>.nix` using `../../nix/lib/devbox-auto-lib.nix`
 3. Update `../../flake.nix` with new package
 4. Add to appropriate bundle package
-5. Run the automated generator: `./scripts/generate-devbox-auto-suite.sh`
 
 ## Benefits
 

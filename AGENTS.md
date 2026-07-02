@@ -100,10 +100,9 @@ devbox-rtk-{ecosystem}-{preferred-tool}-{governance-type}
    - Token optimization (RTK)
    - Tool governance (prefer/force/block)
 
-2. **Create Integrated Packages**: If any combination is needed, create `devbox-rtk-*` packages
-3. **Use Generators**: Run `./scripts/generate-devbox-rtk-suite.sh {ecosystem}`
-4. **Test Integration**: Verify all three concerns work together
-5. **Document**: Update AGENTS.md with ecosystem information
+2. **Create Integrated Packages**: If any combination is needed, create `devbox-rtk-*` packages using `nix/lib/devbox-rtk-lib.nix` (see an existing `nix/devbox-rtk-*.nix` for the pattern)
+3. **Test Integration**: Verify all three concerns work together
+4. **Document**: Update AGENTS.md with ecosystem information
 
 **NEVER create separate wrapper systems** that might conflict with existing ones.
 
@@ -190,15 +189,14 @@ devbox run -- rtk just test-comprehensive-internal
 
 **MUST FOLLOW THIS SEQUENCE for new package ecosystems:**
 
-1. **Use Automated Generation** - Use `scripts/generate-governance-suite.sh` for complete suites
-2. **Create ALL wrapper scripts first** - Every package needs a corresponding wrapper script
-3. **Create ALL Nix derivations** - Each wrapper script needs a Nix derivation
-4. **Update flake.nix imports AND packages sections** - Both sections must include all packages
-5. **Add ALL files to git** - Nix requires all files to be tracked
-6. **Test individual packages** - Verify each package builds and runs
-7. **Update documentation** - Update AGENTS.md with correct counts and descriptions
-8. **Run full test suite** - Ensure nothing is broken
-9. **Do a test intsall in a temporary devbox.json** - Make sure the package works in a real environment
+1. **Create ALL wrapper scripts first** - Every package needs a corresponding wrapper script
+2. **Create ALL Nix derivations** - Each wrapper script needs a Nix derivation, using the shared library in `nix/lib/` (see an existing package in the same class for the pattern)
+3. **Update flake.nix imports AND packages sections** - Both sections must include all packages
+4. **Add ALL files to git** - Nix requires all files to be tracked
+5. **Test individual packages** - Verify each package builds and runs
+6. **Update documentation** - Update AGENTS.md with correct counts and descriptions
+7. **Run full test suite** - Ensure nothing is broken
+8. **Do a test intsall in a temporary devbox.json** - Make sure the package works in a real environment
 
 **Common Pitfalls:**
 - ❌ Forgetting to add files to git (Nix will fail to build)
@@ -206,57 +204,16 @@ devbox run -- rtk just test-comprehensive-internal
 - ❌ Creating documentation without implementing packages
 - ❌ Testing only one package variant (test all 4 variants)
 - ❌ Forgetting to update bundle package counts
-- ❌ Not using the automated generation system
 
-### Automated Package Generation
+### Shared Nix Libraries
 
-For new tool ecosystems, use the automated generation system:
+Each wrapper class has a shared library in `nix/lib/` that inlines the utility scripts (`devbox-manager.sh`, `rtk-wrapper.sh`) at build time via `builtins.readFile`. New packages should use these libraries instead of duplicating wrapper logic:
 
-```bash
-# Generate complete governance suite for a tool
-./scripts/generate-governance-suite.sh <tool> [action]
+- **`nix/lib/devbox-rtk-lib.nix`** - Integrated devbox + RTK + governance wrappers (`devbox-rtk-*` packages)
+- **`nix/lib/devbox-auto-lib.nix`** - Devbox auto-environment wrappers (`devbox-auto-*` packages)
+- **`nix/lib/rtk-wrap-lib.nix`** - RTK token-optimization wrappers (`rtk-wrap-*` packages)
 
-# Examples:
-./scripts/generate-governance-suite.sh curl suite      # Complete suite
-./scripts/generate-governance-suite.sh curl ecosystem  # All ecosystem packages
-./scripts/generate-governance-suite.sh curl docs       # Documentation only
-./scripts/generate-governance-suite.sh curl all        # Everything
-
-# Available tools: npm, pnpm, yarn, bun, pip, grep, ag, git-grep, ucg, pt, sift, sudo, curl, wget, find, locate, sed
-
-# Generate RTK wrapper packages
-./scripts/generate-rtk-suite.sh suite           # Complete RTK suite
-./scripts/generate-rtk-suite.sh wrappers        # Wrapper scripts only
-./scripts/generate-rtk-suite.sh nix             # Nix derivations only
-./scripts/generate-rtk-suite.sh flake           # Update flake.nix only
-
-# Generate devbox-auto wrapper packages
-./scripts/generate-devbox-auto-suite.sh suite   # Complete devbox-auto suite
-./scripts/generate-devbox-auto-suite.sh wrappers # Wrapper scripts only
-./scripts/generate-devbox-auto-suite.sh nix      # Nix derivations only
-./scripts/generate-devbox-auto-suite.sh flake    # Update flake.nix only
-```
-
-**What the generator creates:**
-- **4 wrapper scripts** per tool (prefer, eject, force, block)
-- **4 Nix derivations** per tool
-- **Updated flake.nix** with imports and packages
-- **Test integration** with unified test framework
-- **Git tracking** for all new files
-
-**RTK Generator creates:**
-- **54 wrapper scripts** for common commands (ls, tree, git, npm, pnpm, tsc, jest, etc.)
-- **54 Nix derivations** for RTK wrapper packages
-- **4 bundle packages** (core, development, cloud, all)
-- **Updated flake.nix** with RTK packages
-- **Centralized utility script** (`utils/rtk-wrapper.sh`) for DRY implementation
-
-**Devbox-auto Generator creates:**
-- **8 wrapper scripts** for common development tools (npm, python, cargo, etc.)
-- **8 Nix derivations** for devbox-auto wrapper packages
-- **4 bundle packages** (nodejs, python, rust, go, all)
-- **Updated flake.nix** with devbox-auto packages
-- **Centralized utility script** (`utils/devbox-manager.sh`) for devbox management
+To add a new package, copy an existing `.nix` file in the same class and adapt the `wrapperContent` / `name` / `nativeCmd` fields. The shared library handles inlining the utility scripts and calling the wrap function.
 
 ### Standardized Testing Framework
 
@@ -287,7 +244,7 @@ devbox run -- rtk just test-internal
 
 **All new governance packages MUST include:**
 
-1. **Automated test integration** - Generated by `generate-governance-suite.sh`
+1. **Automated test integration** - Add test cases to `scripts/test-governance-unified.sh`
 2. **Behavior validation** - Each governance type tested for correct behavior
 3. **Build verification** - All packages must build successfully
 4. **Result tracking** - Test results stored in `test-results/` directory
@@ -373,12 +330,9 @@ devbox run -- rtk nix profile install .#bundle-rtk-all
 
 **Adding New RTK Wrappers**:
 ```bash
-# Use the automated generator
-devbox run -- rtk ./scripts/generate-rtk-suite.sh suite
-
-# Or add manually:
+# Add manually using the shared library:
 # 1. Create wrapper in wrappers/rtk-tools/
-# 2. Create Nix derivation in nix/rtk-wrap-<cmd>.nix
+# 2. Create Nix derivation in nix/rtk-wrap-<cmd>.nix using nix/lib/rtk-wrap-lib.nix
 # 3. Update flake.nix imports and packages
 # 4. Add to appropriate bundle package
 ```
@@ -758,14 +712,9 @@ The levonk-packages system organizes packages into distinct classes based on the
 
 ## Adding New RTK Wrappers
 
-Use the automated generator:
-```bash
-devbox run -- rtk ./scripts/generate-rtk-suite.sh suite
-```
-
-Or add manually:
+Add manually using the shared library:
 1. Create wrapper script in `wrappers/rtk-tools/`
-2. Create Nix derivation in `nix/rtk-wrap-<cmd>.nix`
+2. Create Nix derivation in `nix/rtk-wrap-<cmd>.nix` using `nix/lib/rtk-wrap-lib.nix`
 3. Update `flake.nix` imports and packages sections
 4. Add to appropriate bundle package
 5. Update documentation

@@ -185,8 +185,7 @@ This ensures:
 │   ├── identify-missing-tools.sh
 │   ├── update-wrappers-dynamic.sh
 │   ├── update-bundles.sh
-│   ├── test-governance.sh
-│   └── generate-flake.sh
+│   └── test-governance.sh
 ├── devbox.json
 ├── justfile
 └── docs/

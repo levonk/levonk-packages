@@ -3,32 +3,122 @@
   "packages": {
     "act": {
       "resolved": "github:NixOS/nixpkgs/f9d8b65950353691ab56561e7c73d2e1063d810b#act",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/cxphgb801n8smiqy4a64bnq6fz0dggyc-act-0.2.88",
+              "default": true
+            }
+          ]
+        }
+      }
     },
     "github:NixOS/nixpkgs/nixpkgs-unstable": {
-      "last_modified": "2026-05-25T07:42:19Z",
-      "resolved": "github:NixOS/nixpkgs/f9d8b65950353691ab56561e7c73d2e1063d810b?lastModified=1779694939"
+      "last_modified": "2026-06-27T07:37:20Z",
+      "resolved": "github:NixOS/nixpkgs/3d46470bb3030020f7e1361f33514854f5bfa86d?lastModified=1782545840"
+    },
+    "github:levonk/levonk-packages#bundle-rtk-cloud": {
+      "last_modified": "2026-06-28T11:41:53Z",
+      "resolved": "github:levonk/levonk-packages/9d3df66f8a3a5a0303a30392f20aca6180992597?lastModified=1782646913#bundle-rtk-cloud"
+    },
+    "github:levonk/levonk-packages#bundle-rtk-core": {
+      "last_modified": "2026-06-28T11:41:53Z",
+      "resolved": "github:levonk/levonk-packages/9d3df66f8a3a5a0303a30392f20aca6180992597?lastModified=1782646913#bundle-rtk-core"
+    },
+    "github:levonk/levonk-packages#devbox-rtk-nodejs-pnpm-force": {
+      "last_modified": "2026-06-28T11:41:53Z",
+      "resolved": "github:levonk/levonk-packages/9d3df66f8a3a5a0303a30392f20aca6180992597?lastModified=1782646913#devbox-rtk-nodejs-pnpm-force"
+    },
+    "github:levonk/levonk-packages#devbox-rtk-python-uv-force": {
+      "last_modified": "2026-06-28T11:41:53Z",
+      "resolved": "github:levonk/levonk-packages/9d3df66f8a3a5a0303a30392f20aca6180992597?lastModified=1782646913#devbox-rtk-python-uv-force"
+    },
+    "github:levonk/smartfo": {
+      "last_modified": "2026-06-28T08:04:42Z",
+      "resolved": "github:levonk/smartfo/19d12350c0d2a64bf776b67b2a9362129a7042fd?lastModified=1782633882"
     },
     "just": {
       "resolved": "github:NixOS/nixpkgs/f9d8b65950353691ab56561e7c73d2e1063d810b#just",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "man",
+              "path": "/nix/store/144wqvh3s441y05xvzn8m16rhcqbki7d-just-1.51.0-man",
+              "default": true
+            },
+            {
+              "path": "/nix/store/7ppiil9ycr565vqgbc18x4rpgbfgcnzy-just-1.51.0",
+              "default": true
+            }
+          ]
+        }
+      }
     },
     "nix": {
       "resolved": "github:NixOS/nixpkgs/f9d8b65950353691ab56561e7c73d2e1063d810b#nix",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "man",
+              "path": "/nix/store/333fd4y149ywv73q8ahfh33gz5567x77-nix-2.34.7-man",
+              "default": true
+            },
+            {
+              "path": "/nix/store/7fiibxrvqbi5a1p36ffggf6hxxjdlz5c-nix-2.34.7",
+              "default": true
+            }
+          ]
+        }
+      }
     },
     "nodejs": {
       "plugin_version": "0.0.2",
       "resolved": "github:NixOS/nixpkgs/f9d8b65950353691ab56561e7c73d2e1063d810b#nodejs",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/rhv8jiklgw2bw4ljh4nm3h3r3bpnkcl3-nodejs-24.15.0",
+              "default": true
+            }
+          ]
+        }
+      }
     },
     "pnpm": {
       "resolved": "github:NixOS/nixpkgs/f9d8b65950353691ab56561e7c73d2e1063d810b#pnpm",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/6ylc843py5x7jpw8g322adgz08a4kjzd-pnpm-11.1.2",
+              "default": true
+            }
+          ]
+        }
+      }
     },
     "uv": {
       "resolved": "github:NixOS/nixpkgs/f9d8b65950353691ab56561e7c73d2e1063d810b#uv",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/l9ns6x700j1yijay157jahy5kkixg4ka-uv-0.11.16",
+              "default": true
+            }
+          ]
+        }
+      }
     }
   }
 }
