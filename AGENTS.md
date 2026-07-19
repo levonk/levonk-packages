@@ -87,9 +87,37 @@ devbox-rtk-{ecosystem}-{preferred-tool}-{governance-type}
 - `devbox-rtk-nodejs-pnpm-force` - Node.js ecosystem, force pnpm (strict replacement)
 - `devbox-rtk-nodejs-pnpm-block` - Node.js ecosystem, block npm (error)
 - `devbox-rtk-nodejs-pnpm-native` - Node.js ecosystem, use npm as-is (no governance)
+- `devbox-rtk-nodejs-pnpm-dlx-force` - Node.js ecosystem, force one-off runners (`npx`, `bunx`, `bun x`, `yarn dlx`) to `pnpm dlx` (strict replacement)
+- `devbox-rtk-nodejs-pnpm-dlx-prefer` - Node.js ecosystem, prefer `pnpm dlx` over `npx`/`bunx`/`bun x`/`yarn dlx` (soft guidance)
+- `devbox-rtk-nodejs-pnpm-dlx-block` - Node.js ecosystem, block one-off runners `npx`/`bunx`/`bun x`/`yarn dlx` (error)
+- `devbox-rtk-nodejs-pnpm-dlx-native` - Node.js ecosystem, use one-off runners as-is (no governance)
 
 **Ecosystems**: `nodejs`, `python`, `rust`, `go`, `dotnet`, etc.
 **Governance Types**: `prefer`, `force`, `block`, `native`
+
+### One-Off Runner Governance (`*-dlx-*` packages)
+
+The `devbox-rtk-nodejs-pnpm-dlx-*` packages govern the **one-off execution
+commands** that run a package without installing it globally. Each package
+wraps multiple binaries and redirects them to `pnpm dlx`:
+
+| Source command | Wrapped binary | Notes |
+|---|---|---|
+| `npx <pkg>` | `npx` | Standalone binary (ships with npm) |
+| `bunx <pkg>` | `bunx` | Standalone binary (ships with bun) |
+| `bun x <pkg>` | `bun` | Subcommand of `bun`; only intercepted when `$1 == x` |
+| `yarn dlx <pkg>` | `yarn` | Subcommand of `yarn` (berry); only intercepted when `$1 == dlx` |
+
+**Passthrough behavior**: Non-dlx invocations of `yarn` and `bun` (e.g.
+`yarn install`, `yarn run`, `bun run`, `bun install`) are **not** redirected —
+they fall through to the normal `yarn`/`bun` execution path. Use the regular
+`devbox-rtk-nodejs-pnpm-*` packages to govern those.
+
+**Argument translation**: Arguments are forwarded 1:1 (`npx foo --bar` →
+`pnpm dlx foo --bar`). Flag differences between runners (e.g. `npx --yes`
+vs `pnpm dlx` defaults, `npx -p` vs `pnpm dlx --package`) are **not**
+translated — callers should use `pnpm dlx`-compatible flags when relying on
+the `force`/`prefer` variants.
 
 ### Adding New Tool Ecosystems
 
@@ -676,7 +704,11 @@ The levonk-packages system organizes packages into distinct classes based on the
 
 **Governance Types**: `prefer`, `force`, `block`, `native`
 
-**Examples**: `devbox-rtk-nodejs-pnpm-force`, `devbox-rtk-python-uv-prefer`
+**Examples**: `devbox-rtk-nodejs-pnpm-force`, `devbox-rtk-nodejs-pnpm-dlx-force`, `devbox-rtk-python-uv-prefer`
+
+**One-Off Runner Variants**: The `*-dlx-*` variants govern one-off execution
+commands (`npx`, `bunx`, `bun x`, `yarn dlx`) and redirect them to
+`pnpm dlx`. See "One-Off Runner Governance" above for details.
 
 **Benefits**:
 - No conflicts between separate wrapper systems

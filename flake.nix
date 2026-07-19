@@ -267,6 +267,10 @@
         devbox-rtk-nodejs-pnpm-prefer = import ./nix/devbox-rtk-nodejs-pnpm-prefer.nix { inherit pkgs; };
         devbox-rtk-nodejs-pnpm-block = import ./nix/devbox-rtk-nodejs-pnpm-block.nix { inherit pkgs; };
         devbox-rtk-nodejs-pnpm-native = import ./nix/devbox-rtk-nodejs-pnpm-native.nix { inherit pkgs; };
+        devbox-rtk-nodejs-pnpm-dlx-force = import ./nix/devbox-rtk-nodejs-pnpm-dlx-force.nix { inherit pkgs; };
+        devbox-rtk-nodejs-pnpm-dlx-prefer = import ./nix/devbox-rtk-nodejs-pnpm-dlx-prefer.nix { inherit pkgs; };
+        devbox-rtk-nodejs-pnpm-dlx-block = import ./nix/devbox-rtk-nodejs-pnpm-dlx-block.nix { inherit pkgs; };
+        devbox-rtk-nodejs-pnpm-dlx-native = import ./nix/devbox-rtk-nodejs-pnpm-dlx-native.nix { inherit pkgs; };
         devbox-rtk-nodejs-yarn-force = import ./nix/devbox-rtk-nodejs-yarn-force.nix { inherit pkgs; };
         devbox-rtk-nodejs-yarn-prefer = import ./nix/devbox-rtk-nodejs-yarn-prefer.nix { inherit pkgs; };
         devbox-rtk-nodejs-yarn-block = import ./nix/devbox-rtk-nodejs-yarn-block.nix { inherit pkgs; };
@@ -579,6 +583,10 @@
           inherit devbox-rtk-nodejs-pnpm-prefer;
           inherit devbox-rtk-nodejs-pnpm-block;
           inherit devbox-rtk-nodejs-pnpm-native;
+          inherit devbox-rtk-nodejs-pnpm-dlx-force;
+          inherit devbox-rtk-nodejs-pnpm-dlx-prefer;
+          inherit devbox-rtk-nodejs-pnpm-dlx-block;
+          inherit devbox-rtk-nodejs-pnpm-dlx-native;
           inherit devbox-rtk-nodejs-yarn-force;
           inherit devbox-rtk-nodejs-yarn-prefer;
           inherit devbox-rtk-nodejs-yarn-block;

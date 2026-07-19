@@ -132,11 +132,16 @@ apk add command-prefer-pnpm
 
 ## 📦 Available Packages
 
-### Integrated Devbox-RTK-Governance Packages (16 packages)
+### Integrated Devbox-RTK-Governance Packages (20 packages)
 - **Node.js with pnpm**: `devbox-rtk-nodejs-pnpm-prefer`, `devbox-rtk-nodejs-pnpm-force`, `devbox-rtk-nodejs-pnpm-block`, `devbox-rtk-nodejs-pnpm-native`
+- **Node.js with pnpm dlx (one-off runners)**: `devbox-rtk-nodejs-pnpm-dlx-prefer`, `devbox-rtk-nodejs-pnpm-dlx-force`, `devbox-rtk-nodejs-pnpm-dlx-block`, `devbox-rtk-nodejs-pnpm-dlx-native`
 - **Node.js with yarn**: `devbox-rtk-nodejs-yarn-prefer`, `devbox-rtk-nodejs-yarn-force`, `devbox-rtk-nodejs-yarn-block`, `devbox-rtk-nodejs-yarn-native`
 - **Node.js with bun**: `devbox-rtk-nodejs-bun-prefer`, `devbox-rtk-nodejs-bun-force`, `devbox-rtk-nodejs-bun-block`, `devbox-rtk-nodejs-bun-native`
 - **Python with uv**: `devbox-rtk-python-uv-prefer`, `devbox-rtk-python-uv-force`, `devbox-rtk-python-uv-block`, `devbox-rtk-python-uv-native`
+
+> **pnpm dlx packages** govern one-off execution commands (`npx`, `bunx`,
+> `bun x`, `yarn dlx`) and redirect them to `pnpm dlx`. Non-dlx invocations
+> of `yarn` and `bun` (e.g. `yarn install`, `bun run`) pass through untouched.
 
 
 ### Devbox Auto-Environment Management (8 packages)

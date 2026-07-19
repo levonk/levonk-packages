@@ -56,6 +56,26 @@ devbox-rtk-{ecosystem}-{preferred-tool}-{governance-type}
 - **`devbox-rtk-nodejs-bun-block`** - block npm/pnpm/yarn (error + devbox + RTK)
 - **`devbox-rtk-nodejs-bun-native`** - npm/pnpm/yarn as-is (devbox + RTK, no governance)
 
+#### Pnpm dlx Governance (one-off runners)
+
+These packages govern the **one-off execution commands** used to run a package
+without installing it globally:
+
+| Source command | Wrapped binary |
+|---|---|
+| `npx <pkg>` | `npx` |
+| `bunx <pkg>` | `bunx` |
+| `bun x <pkg>` | `bun` (when `$1 == x`) |
+| `yarn dlx <pkg>` | `yarn` (when `$1 == dlx`) |
+
+All four sources are redirected to `pnpm dlx`. Non-dlx invocations of `yarn`
+and `bun` (e.g. `yarn install`, `bun run`) pass through untouched.
+
+- **`devbox-rtk-nodejs-pnpm-dlx-prefer`** - npx/bunx/yarn dlx/bun x → pnpm dlx (soft guidance + devbox + RTK)
+- **`devbox-rtk-nodejs-pnpm-dlx-force`** - npx/bunx/yarn dlx/bun x → pnpm dlx (strict replacement + devbox + RTK)
+- **`devbox-rtk-nodejs-pnpm-dlx-block`** - block npx/bunx/yarn dlx/bun x (error + devbox + RTK)
+- **`devbox-rtk-nodejs-pnpm-dlx-native`** - one-off runners as-is (devbox + RTK, no governance)
+
 ### Python Ecosystem
 
 #### UV Governance
@@ -136,6 +156,57 @@ npm install
 npm install
 → 📦 Adding npm to devbox environment...
 → devbox run -- rtk npm install
+```
+
+### Force pnpm dlx (one-off runners)
+```bash
+# Install: devbox-rtk-nodejs-pnpm-dlx-force
+npx create-next-app myapp
+→ ✅ Using pnpm dlx instead of npx (forced by policy)...
+→ devbox run -- rtk pnpm dlx create-next-app myapp
+
+bunx create-vite
+→ ✅ Using pnpm dlx instead of bunx (forced by policy)...
+→ devbox run -- rtk pnpm dlx create-vite
+
+yarn dlx cowsay hi
+→ ✅ Using pnpm dlx instead of yarn dlx (forced by policy)...
+→ devbox run -- rtk pnpm dlx cowsay hi
+
+bun x cowsay hi
+→ ✅ Using pnpm dlx instead of bun x (forced by policy)...
+→ devbox run -- rtk pnpm dlx cowsay hi
+
+# Non-dlx invocations pass through untouched:
+yarn install
+→ devbox run -- rtk yarn install
+bun run dev
+→ devbox run -- rtk bun run dev
+```
+
+### Prefer pnpm dlx (one-off runners)
+```bash
+# Install: devbox-rtk-nodejs-pnpm-dlx-prefer
+npx create-next-app myapp
+→ ⚠️ Prefer pnpm dlx over npx. Using pnpm dlx...
+→ devbox run -- rtk pnpm dlx create-next-app myapp
+```
+
+### Block one-off runners
+```bash
+# Install: devbox-rtk-nodejs-pnpm-dlx-block
+npx create-next-app myapp
+→ ❌ npx is blocked by policy. Use pnpm dlx instead.
+→ 💡 Install pnpm: https://pnpm.io/installation
+→ exit 1
+
+yarn dlx cowsay hi
+→ ❌ yarn dlx is blocked by policy. Use pnpm dlx instead.
+→ exit 1
+
+# Non-dlx yarn still works:
+yarn install
+→ devbox run -- rtk yarn install
 ```
 
 ## Adding New Integrated Packages
