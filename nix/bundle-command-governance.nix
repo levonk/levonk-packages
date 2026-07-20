@@ -14,11 +14,7 @@ let
   eject-bun = import ./eject-bun.nix { inherit pkgs; };
   force-bun = import ./force-bun.nix { inherit pkgs; };
   block-bun = import ./block-bun.nix { inherit pkgs; };
-  
-  prefer-uv = import ./prefer-uv.nix { inherit pkgs; };
-  eject-pip = import ./eject-pip.nix { inherit pkgs; };
-  block-pip = import ./block-pip.nix { inherit pkgs; };
-  
+
   prefer-npm = import ./prefer-npm.nix { inherit pkgs; };
   force-npm = import ./force-npm.nix { inherit pkgs; };
   eject-pnpm = import ./eject-pnpm.nix { inherit pkgs; };
@@ -172,9 +168,6 @@ pkgs.symlinkJoin {
     eject-bun
     force-bun
     block-bun
-    prefer-uv
-    eject-pip
-    block-pip
     prefer-npm
     force-npm
     eject-pnpm
