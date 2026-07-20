@@ -13,7 +13,8 @@ let
     case "$_called_as" in
       npx|bunx)
         echo "✅ Using pnpm dlx instead of $_called_as (forced by policy)..."
-        devbox_wrap pnpm dlx "$@"
+        _dlx_translate_npx_args "$@"
+        devbox_wrap pnpm dlx "''${_DLX_TRANSLATED_ARGS[@]}"
         ;;
       yarn)
         if [ "''${1:-}" = "dlx" ]; then

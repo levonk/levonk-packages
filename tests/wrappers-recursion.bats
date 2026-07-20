@@ -175,3 +175,70 @@ teardown() {
     [ "$status" -eq 0 ]
     [[ "$output" == *"FAKE yarn CALLED WITH: install"* ]]
 }
+
+# --- Flag translation tests (npx → pnpm dlx) ---
+
+@test "flag translation: npx --yes foo → pnpm dlx foo (--yes dropped)" {
+    wrapper_path="$(_build_wrapper devbox-rtk-nodejs-pnpm-dlx-force)"
+    FAKE_BIN_DIR="$(_stage_fake_tool pnpm)"
+    export PATH="$FAKE_BIN_DIR:$wrapper_path/bin:/usr/bin:/bin"
+
+    run _timeout_cmd 10 "$wrapper_path/bin/npx" --yes create-next-app myapp
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"FAKE pnpm CALLED WITH: dlx create-next-app myapp"* ]]
+    [[ "$output" != *"--yes"* ]]
+}
+
+@test "flag translation: npx -y foo → pnpm dlx foo (-y dropped)" {
+    wrapper_path="$(_build_wrapper devbox-rtk-nodejs-pnpm-dlx-force)"
+    FAKE_BIN_DIR="$(_stage_fake_tool pnpm)"
+    export PATH="$FAKE_BIN_DIR:$wrapper_path/bin:/usr/bin:/bin"
+
+    run _timeout_cmd 10 "$wrapper_path/bin/npx" -y create-next-app myapp
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"FAKE pnpm CALLED WITH: dlx create-next-app myapp"* ]]
+    [[ "$output" != *"-y "* ]]
+}
+
+@test "flag translation: npx -p pkg foo → pnpm dlx --package pkg foo" {
+    wrapper_path="$(_build_wrapper devbox-rtk-nodejs-pnpm-dlx-force)"
+    FAKE_BIN_DIR="$(_stage_fake_tool pnpm)"
+    export PATH="$FAKE_BIN_DIR:$wrapper_path/bin:/usr/bin:/bin"
+
+    run _timeout_cmd 10 "$wrapper_path/bin/npx" -p cowsay cowsay hi
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"FAKE pnpm CALLED WITH: dlx --package cowsay cowsay hi"* ]]
+}
+
+@test "flag translation: npx --package pkg foo → passthrough" {
+    wrapper_path="$(_build_wrapper devbox-rtk-nodejs-pnpm-dlx-force)"
+    FAKE_BIN_DIR="$(_stage_fake_tool pnpm)"
+    export PATH="$FAKE_BIN_DIR:$wrapper_path/bin:/usr/bin:/bin"
+
+    run _timeout_cmd 10 "$wrapper_path/bin/npx" --package cowsay cowsay hi
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"FAKE pnpm CALLED WITH: dlx --package cowsay cowsay hi"* ]]
+}
+
+@test "flag translation: npx -y -p pkg foo → pnpm dlx --package pkg foo" {
+    wrapper_path="$(_build_wrapper devbox-rtk-nodejs-pnpm-dlx-force)"
+    FAKE_BIN_DIR="$(_stage_fake_tool pnpm)"
+    export PATH="$FAKE_BIN_DIR:$wrapper_path/bin:/usr/bin:/bin"
+
+    run _timeout_cmd 10 "$wrapper_path/bin/npx" -y -p cowsay cowsay hi
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"FAKE pnpm CALLED WITH: dlx --package cowsay cowsay hi"* ]]
+    [[ "$output" != *"-y "* ]]
+    [[ "$output" != *"--yes"* ]]
+}
+
+@test "flag translation: npx --no foo → --no dropped" {
+    wrapper_path="$(_build_wrapper devbox-rtk-nodejs-pnpm-dlx-force)"
+    FAKE_BIN_DIR="$(_stage_fake_tool pnpm)"
+    export PATH="$FAKE_BIN_DIR:$wrapper_path/bin:/usr/bin:/bin"
+
+    run _timeout_cmd 10 "$wrapper_path/bin/npx" --no create-next-app myapp
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"FAKE pnpm CALLED WITH: dlx create-next-app myapp"* ]]
+    [[ "$output" != *"--no "* ]]
+}

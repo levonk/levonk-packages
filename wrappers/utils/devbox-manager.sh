@@ -82,6 +82,46 @@ is_package_available() {
     PATH="$(_wrapper_path_excluding_self)" command -v "$package" >/dev/null 2>&1
 }
 
+# Translate npx/bunx args to pnpm dlx-compatible args.
+# Populates the global _DLX_TRANSLATED_ARGS array.
+#
+# Translations (partial — only flags pnpm dlx can't accept or where the
+# short form differs):
+#   -y / --yes / --no        → dropped (pnpm dlx doesn't prompt; defaults to yes)
+#   -p <pkg>                 → --package <pkg>  (pnpm dlx only documents long form)
+#   -p=<pkg>                 → --package=<pkg>
+#   --package / --package=*  → passthrough
+#   everything else          → passthrough
+#
+# Not translated (incompatible flags will error from pnpm dlx explicitly):
+#   --node-options, --no-install, --shell, --shell-mode, etc.
+_dlx_translate_npx_args() {
+    _DLX_TRANSLATED_ARGS=()
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -y|--yes|--no)
+                shift
+                ;;
+            -p)
+                _DLX_TRANSLATED_ARGS+=(--package)
+                shift
+                if [ $# -gt 0 ]; then
+                    _DLX_TRANSLATED_ARGS+=("$1")
+                    shift
+                fi
+                ;;
+            -p=*)
+                _DLX_TRANSLATED_ARGS+=("--package=${1#-p=}")
+                shift
+                ;;
+            *)
+                _DLX_TRANSLATED_ARGS+=("$1")
+                shift
+                ;;
+        esac
+    done
+}
+
 # Resolve the devbox binary, preferring an upstream install over the nixpkgs
 # fallback baked in at build time.
 # 1. Look for devbox on PATH excluding this wrapper's own directory (finds

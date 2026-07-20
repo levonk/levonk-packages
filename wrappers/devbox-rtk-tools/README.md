@@ -71,6 +71,17 @@ without installing it globally:
 All four sources are redirected to `pnpm dlx`. Non-dlx invocations of `yarn`
 and `bun` (e.g. `yarn install`, `bun run`) pass through untouched.
 
+**Flag translation** (npx/bunx → pnpm dlx only; yarn dlx and bun x pass args
+1:1 because their flag surfaces are already compatible):
+
+| npx flag | pnpm dlx equivalent | Behavior |
+|---|---|---|
+| `--yes` / `-y` / `--no` | *(dropped)* | pnpm dlx doesn't prompt; defaults to yes |
+| `-p <pkg>` | `--package <pkg>` | pnpm dlx only documents the long form |
+| `-p=<pkg>` | `--package=<pkg>` | same |
+| `--package <pkg>` / `--package=<pkg>` | passthrough | already compatible |
+| other flags | passthrough | incompatible flags error from pnpm dlx explicitly |
+
 - **`devbox-rtk-nodejs-pnpm-dlx-prefer`** - npx/bunx/yarn dlx/bun x → pnpm dlx (soft guidance + devbox + RTK)
 - **`devbox-rtk-nodejs-pnpm-dlx-force`** - npx/bunx/yarn dlx/bun x → pnpm dlx (strict replacement + devbox + RTK)
 - **`devbox-rtk-nodejs-pnpm-dlx-block`** - block npx/bunx/yarn dlx/bun x (error + devbox + RTK)
