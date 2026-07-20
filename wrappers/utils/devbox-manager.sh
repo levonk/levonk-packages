@@ -55,10 +55,31 @@ add_package_to_devbox() {
     fi
 }
 
-# Check if package is available in current environment
+# Print PATH with this script's own directory removed (all occurrences).
+# Used to avoid infinite recursion when a wrapper's own bin dir is in PATH:
+# command -v <tool> would find the wrapper itself, so we exclude it.
+# NOTE: naive single-pass bash parameter expansion; if wrapper dir appears 2+
+# times in PATH, later copies remain. Upgrade: use IFS loop.
+_wrapper_path_excluding_self() {
+    local _wrapper_dir
+    _wrapper_dir="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+    if [ -z "$_wrapper_dir" ]; then
+        printf '%s' "$PATH"
+        return 0
+    fi
+    local _clean_path="$PATH"
+    _clean_path="${_clean_path#"$_wrapper_dir:"}"
+    _clean_path="${_clean_path%":$_wrapper_dir"}"
+    _clean_path="${_clean_path//":$_wrapper_dir:"/:}"
+    printf '%s' "$_clean_path"
+}
+
+# Check if package is available in current environment, excluding this
+# wrapper's own directory from PATH so we don't find the wrapper itself
+# (which would cause infinite recursion when the wrapper re-execs the tool).
 is_package_available() {
     local package="$1"
-    command -v "$package" >/dev/null 2>&1
+    PATH="$(_wrapper_path_excluding_self)" command -v "$package" >/dev/null 2>&1
 }
 
 # Resolve the devbox binary, preferring an upstream install over the nixpkgs
@@ -70,19 +91,11 @@ is_package_available() {
 #    build time by the Nix lib, pointing to nixpkgs devbox).
 # 3. If neither, return failure so the caller can warn / fall back to native.
 _devbox_resolve_devbox() {
-    local _wrapper_dir
-    _wrapper_dir="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
-    if [ -n "$_wrapper_dir" ]; then
-        local _clean_path="$PATH"
-        _clean_path="${_clean_path#"$_wrapper_dir:"}"
-        _clean_path="${_clean_path%":$_wrapper_dir"}"
-        _clean_path="${_clean_path//":$_wrapper_dir:"/:}"
-        local _found
-        _found="$(PATH="$_clean_path" command -v devbox 2>/dev/null)" || true
-        if [ -n "$_found" ]; then
-            printf '%s' "$_found"
-            return 0
-        fi
+    local _found
+    _found="$(PATH="$(_wrapper_path_excluding_self)" command -v devbox 2>/dev/null)" || true
+    if [ -n "$_found" ]; then
+        printf '%s' "$_found"
+        return 0
     fi
     if [ -n "${DEVBOX_FALLBACK:-}" ] && [ -x "${DEVBOX_FALLBACK}" ]; then
         printf '%s' "$DEVBOX_FALLBACK"

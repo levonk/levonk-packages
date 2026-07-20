@@ -1,6 +1,6 @@
 {
-  "name": "command-governance",
-  "version": "1.0.0",
+  "name":        "command-governance",
+  "version":     "1.0.0",
   "description": "Command Preference & Package Governance System",
   "packages": [
     "just",
@@ -13,7 +13,8 @@
     "github:levonk/levonk-packages#bundle-rtk-core",
     "github:levonk/levonk-packages#bundle-rtk-cloud",
     "github:levonk/smartfo",
-    "act"
+    "act",
+    "bats@latest"
   ],
   "shell": {
     "init_hook": [
@@ -26,12 +27,12 @@
     ]
   },
   "scripts": {
-    "build": "just build-internal",
-    "test": "just test-internal", 
-    "install": "just install-internal",
-    "generate": "just generate-internal",
-    "clean": "just clean-internal",
-    "release": "just release-internal",
+    "build":        "just build-internal",
+    "test":         "just test-internal",
+    "install":      "just install-internal",
+    "generate":     "just generate-internal",
+    "clean":        "just clean-internal",
+    "release":      "just release-internal",
     "release-test": "just release-test-internal"
   }
 }

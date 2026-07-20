@@ -99,6 +99,12 @@ test-comprehensive:
     echo "🧪 Running comprehensive governance tests..."
     ./scripts/test-governance.sh
 
+# Bats tests for wrapper utilities (recursion fix, dlx routing, etc.)
+test-wrappers:
+    echo "🧪 Running bats wrapper tests..."
+    bats tests/wrappers-recursion.bats
+    echo "✅ Wrapper bats tests complete"
+
 # Install individual packages via devbox
 install-internal:
     echo "📦 Example devbox installations:"

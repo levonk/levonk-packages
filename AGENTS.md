@@ -546,6 +546,7 @@ cd packaging/arch/prefer-pnpm && makepkg -si
 - **Transient environments**: Isolated devbox test spaces
 - **Ripgrep-specific tests**: Dedicated test suite for search tool governance
 - **Devbox reminder tests**: Per-governance-variant tests in isolated devbox environments
+- **Bats wrapper tests**: `tests/wrappers-recursion.bats` covers shared utility fixes (e.g. the `_wrapper_path_excluding_self` recursion fix in `devbox-manager.sh`) and dlx routing behavior for `devbox-rtk-nodejs-pnpm-dlx-*` packages. Requires `bats` (added to `devbox.json`).
 
 ### Running Tests
 
@@ -561,6 +562,9 @@ devbox run -- rtk just test-comprehensive-internal
 
 # Individual package testing
 devbox run -- rtk just test-internal-internal
+
+# Bats wrapper tests (recursion fix, dlx routing)
+devbox run -- bats tests/wrappers-recursion.bats
 
 # Devbox reminder tests (per governance variant)
 cd tests/devbox-reminders/prefer && devbox shell   # Tests prefer-* wrappers

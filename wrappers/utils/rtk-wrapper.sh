@@ -26,21 +26,11 @@ _rtk_resolve_native() {
             ;;
     esac
     # Bare name — try PATH with our own directory excluded
-    local _wrapper_dir
-    _wrapper_dir="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
-    if [ -n "$_wrapper_dir" ]; then
-        local _clean_path
-        _clean_path="$PATH"
-        # Remove wrapper dir from PATH (handle start, middle, end positions)
-        _clean_path="${_clean_path#"$_wrapper_dir:"}"
-        _clean_path="${_clean_path%":$_wrapper_dir"}"
-        _clean_path="${_clean_path//":$_wrapper_dir:"/:}"  # ponytail: naive single-pass replace; if wrapper dir appears 2+ times in PATH, later copies remain. Upgrade: use IFS loop.
-        local _found
-        _found="$(PATH="$_clean_path" command -v "$native_cmd" 2>/dev/null)" || true
-        if [ -n "$_found" ]; then
-            printf '%s' "$_found"
-            return 0
-        fi
+    local _found
+    _found="$(PATH="$(_wrapper_path_excluding_self)" command -v "$native_cmd" 2>/dev/null)" || true
+    if [ -n "$_found" ]; then
+        printf '%s' "$_found"
+        return 0
     fi
     # Last resort: return the bare name and let exec try PATH
     printf '%s' "$native_cmd"
@@ -55,19 +45,11 @@ _rtk_resolve_native() {
 #    time by the Nix lib, pointing to nixpkgs rtk).
 # 3. If neither, return failure so the caller can warn / fall back to native.
 _rtk_resolve_rtk() {
-    local _wrapper_dir
-    _wrapper_dir="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
-    if [ -n "$_wrapper_dir" ]; then
-        local _clean_path="$PATH"
-        _clean_path="${_clean_path#"$_wrapper_dir:"}"
-        _clean_path="${_clean_path%":$_wrapper_dir"}"
-        _clean_path="${_clean_path//":$_wrapper_dir:"/:}"
-        local _found
-        _found="$(PATH="$_clean_path" command -v rtk 2>/dev/null)" || true
-        if [ -n "$_found" ]; then
-            printf '%s' "$_found"
-            return 0
-        fi
+    local _found
+    _found="$(PATH="$(_wrapper_path_excluding_self)" command -v rtk 2>/dev/null)" || true
+    if [ -n "$_found" ]; then
+        printf '%s' "$_found"
+        return 0
     fi
     if [ -n "${RTK_FALLBACK:-}" ] && [ -x "${RTK_FALLBACK}" ]; then
         printf '%s' "$RTK_FALLBACK"

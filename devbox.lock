@@ -15,6 +15,54 @@
         }
       }
     },
+    "bats@latest": {
+      "last_modified": "2026-06-27T07:37:20Z",
+      "resolved": "github:NixOS/nixpkgs/3d46470bb3030020f7e1361f33514854f5bfa86d#bats",
+      "source": "devbox-search",
+      "version": "1.12.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/x7yxck6kadzif93ayidx5lakvy6n8x0p-bats-1.12.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/x7yxck6kadzif93ayidx5lakvy6n8x0p-bats-1.12.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/qhw0vh5yp7cqmr60nj85srxdyxgqkad3-bats-1.12.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/qhw0vh5yp7cqmr60nj85srxdyxgqkad3-bats-1.12.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/s439mjy5w69102q0s26jby1gkwiww76v-bats-1.12.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/s439mjy5w69102q0s26jby1gkwiww76v-bats-1.12.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/qhcw6dglb67vacfqjgxgyrw1lf3v2g0w-bats-1.12.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/qhcw6dglb67vacfqjgxgyrw1lf3v2g0w-bats-1.12.0"
+        }
+      }
+    },
     "github:NixOS/nixpkgs/nixpkgs-unstable": {
       "last_modified": "2026-06-27T07:37:20Z",
       "resolved": "github:NixOS/nixpkgs/3d46470bb3030020f7e1361f33514854f5bfa86d?lastModified=1782545840"
@@ -78,7 +126,7 @@
       }
     },
     "nodejs": {
-      "plugin_version": "0.0.2",
+      "plugin_version": "0.0.4",
       "resolved": "github:NixOS/nixpkgs/f9d8b65950353691ab56561e7c73d2e1063d810b#nodejs",
       "source": "nixpkg",
       "systems": {
