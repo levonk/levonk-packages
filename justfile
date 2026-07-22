@@ -85,7 +85,7 @@ test-nodejs:
     echo "✅ Node.js package functionality tests complete"
 
 # Test specific package
-test-package:
+test-package package='':
     #!/usr/bin/env bash
     if [ -z "{{package}}" ]; then
         echo "Usage: just test-package <package-name>"
