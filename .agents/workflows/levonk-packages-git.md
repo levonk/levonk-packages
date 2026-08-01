@@ -1,2 +1,3 @@
-- Run the skill ~/p/gh/levonk/dotfiles/home/current/.chezmoitemplates/config/ai/skills/software-dev/git-repository-management/SKILL.md 
+- Read ~p/gh/levonk/levonk-packages/AGENTS.md
+- Run the skill ~/p/gh/levonk/skills-src/src/current/skills/software-dev/git-repository-management
 - on the levonk-packages project
