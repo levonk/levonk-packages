@@ -14,7 +14,8 @@
     "github:levonk/levonk-packages#bundle-rtk-cloud",
     "github:levonk/smartfo",
     "act",
-    "bats@latest"
+    "bats@latest",
+    "rtk@latest"
   ],
   "shell": {
     "init_hook": [
