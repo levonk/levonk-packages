@@ -242,3 +242,44 @@ teardown() {
     [[ "$output" == *"FAKE pnpm CALLED WITH: dlx create-next-app myapp"* ]]
     [[ "$output" != *"--no "* ]]
 }
+
+# --- Regression tests for rtk-wrap-* packages ---
+# These packages only inline rtk-wrapper.sh (not devbox-manager.sh), so they
+# must get _wrapper_path_excluding_self from utils/path-utils.sh. Without that
+# inlining, every invocation emits "_wrapper_path_excluding_self: command not
+# found" and the wrapper falls back to native in a broken way.
+
+@test "rtk-wrap-cat: no _wrapper_path_excluding_self error, falls back to native cat" {
+    wrapper_path="$(_build_wrapper rtk-wrap-cat)"
+
+    # No RTK on PATH → wrapper warns + falls back to native coreutils cat.
+    # PATH: wrapper bin first (so wrapper is found), then /usr/bin for native cat.
+    export PATH="$wrapper_path/bin:/usr/bin:/bin"
+
+    tmpfile="$(mktemp)"
+    echo "hello rtk-wrap-cat" > "$tmpfile"
+
+    run _timeout_cmd 10 "$wrapper_path/bin/cat" "$tmpfile"
+
+    rm -f "$tmpfile"
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"hello rtk-wrap-cat"* ]]
+    [[ "$output" != *"_wrapper_path_excluding_self: command not found"* ]]
+}
+
+@test "rtk-wrap-wc: no _wrapper_path_excluding_self error, falls back to native wc" {
+    wrapper_path="$(_build_wrapper rtk-wrap-wc)"
+    export PATH="$wrapper_path/bin:/usr/bin:/bin"
+
+    tmpfile="$(mktemp)"
+    printf 'one\ntwo\nthree\n' > "$tmpfile"
+
+    run _timeout_cmd 10 "$wrapper_path/bin/wc" -l "$tmpfile"
+
+    rm -f "$tmpfile"
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"3"* ]]
+    [[ "$output" != *"_wrapper_path_excluding_self: command not found"* ]]
+}

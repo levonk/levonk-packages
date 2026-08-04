@@ -55,24 +55,9 @@ add_package_to_devbox() {
     fi
 }
 
-# Print PATH with this script's own directory removed (all occurrences).
-# Used to avoid infinite recursion when a wrapper's own bin dir is in PATH:
-# command -v <tool> would find the wrapper itself, so we exclude it.
-# NOTE: naive single-pass bash parameter expansion; if wrapper dir appears 2+
-# times in PATH, later copies remain. Upgrade: use IFS loop.
-_wrapper_path_excluding_self() {
-    local _wrapper_dir
-    _wrapper_dir="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
-    if [ -z "$_wrapper_dir" ]; then
-        printf '%s' "$PATH"
-        return 0
-    fi
-    local _clean_path="$PATH"
-    _clean_path="${_clean_path#"$_wrapper_dir:"}"
-    _clean_path="${_clean_path%":$_wrapper_dir"}"
-    _clean_path="${_clean_path//":$_wrapper_dir:"/:}"
-    printf '%s' "$_clean_path"
-}
+# _wrapper_path_excluding_self is defined in utils/path-utils.sh and MUST be
+# inlined before this file. See nix/lib/devbox-auto-lib.nix and
+# nix/lib/devbox-rtk-lib.nix.
 
 # Check if package is available in current environment, excluding this
 # wrapper's own directory from PATH so we don't find the wrapper itself

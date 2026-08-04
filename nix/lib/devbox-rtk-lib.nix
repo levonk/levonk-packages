@@ -29,6 +29,8 @@ in
 pkgs.writeShellScriptBin name ''
   RTK_FALLBACK="${rtkFallback}"
   DEVBOX_FALLBACK="${devboxFallback}"
+  ${builtins.readFile ../../wrappers/utils/path-utils.sh}
+
   ${builtins.readFile ../../wrappers/utils/devbox-manager.sh}
 
   ${builtins.readFile ../../wrappers/utils/rtk-wrapper.sh}

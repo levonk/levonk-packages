@@ -44,6 +44,9 @@ let
 in
 pkgs.writeShellScriptBin name ''
   RTK_FALLBACK="${rtkFallback}"
+  NATIVE_BIN="${nativeBin}"
+  ${builtins.readFile ../../wrappers/utils/path-utils.sh}
+
   ${builtins.readFile ../../wrappers/utils/rtk-wrapper.sh}
 
   ${wrapperContent}
