@@ -1,22 +1,24 @@
 {
-  "name":        "command-governance",
-  "version":     "1.0.0",
+  "name": "command-governance",
+  "version": "1.0.0",
   "description": "Command Preference & Package Governance System",
-  "packages": [
-    "just",
-    "nix",
-    "nodejs",
-    "pnpm",
-    "uv",
-    "github:levonk/levonk-packages#devbox-rtk-nodejs-pnpm-force",
-    "github:levonk/levonk-packages#devbox-rtk-python-uv-force",
-    "github:levonk/levonk-packages#bundle-rtk-core",
-    "github:levonk/levonk-packages#bundle-rtk-cloud",
-    "github:levonk/smartfo",
-    "act",
-    "bats@latest",
-    "rtk@latest"
-  ],
+  "packages": {
+    "just": "",
+    "nix": "",
+    "nodejs": "",
+    "pnpm": "",
+    "uv": "",
+    "github:levonk/levonk-packages#devbox-rtk-nodejs-pnpm-force": "",
+    "github:levonk/levonk-packages#devbox-rtk-python-uv-force": "",
+    "github:levonk/levonk-packages#bundle-rtk-core": "",
+    "github:levonk/levonk-packages#bundle-rtk-cloud": "",
+    "github:levonk/smartfo": "",
+    "act": "",
+    "bats": "latest",
+    "rtk": "latest",
+    "git-secrets": "",
+    "git-imerge": ""
+  },
   "shell": {
     "init_hook": [
       "echo '🔧 Command Governance Development Environment'",
@@ -28,12 +30,12 @@
     ]
   },
   "scripts": {
-    "build":        "just build-internal",
-    "test":         "just test-internal",
-    "install":      "just install-internal",
-    "generate":     "just generate-internal",
-    "clean":        "just clean-internal",
-    "release":      "just release-internal",
+    "build": "just build-internal",
+    "test": "just test-internal",
+    "install": "just install-internal",
+    "generate": "just generate-internal",
+    "clean": "just clean-internal",
+    "release": "just release-internal",
     "release-test": "just release-test-internal"
   }
 }
